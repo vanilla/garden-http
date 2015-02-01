@@ -16,7 +16,11 @@ install:
     - travis/install.sh
 #    - composer install
 
-#script: phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
+script: echo "Hello world" # phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
+
+addons:
+  hosts:
+    - garden-apiclient.dev
 
 #before_script:
 #    - mysql -uroot -e 'create database if not exists phpunit_garden;'
