@@ -1,5 +1,4 @@
 server {
-    server_name $hostname;
     root {DOCUMENT_ROOT};
     listen 80 default_server;
 
