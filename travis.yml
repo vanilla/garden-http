@@ -1,0 +1,26 @@
+language: php
+
+php:
+    - 5.4
+#    - 5.5
+#    - 5.6
+#    - hhvm
+#    - hhvm-nightly
+
+matrix:
+    fast_finish: true
+#    allow_failures:
+#        - php: hhvm-nightly
+
+install:
+    - travis/install.sh
+#    - composer install
+
+#script: phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
+
+#before_script:
+#    - mysql -uroot -e 'create database if not exists phpunit_garden;'
+
+#after_script:
+#    - wget https://scrutinizer-ci.com/ocular.phar
+#    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
