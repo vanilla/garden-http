@@ -20,9 +20,8 @@ sudo sed -e "s|{USER}|$USER|g" -e "s|{PHP_FPM_LISTEN}|$PHP_FPM_LISTEN|g" < "$DIR
 
 # Build the default site nginx conf.
 sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{PHP_FPM_LISTEN}|$PHP_FPM_LISTEN|g" < "$DIR/default.conf.tpl" > "$DIR/default.conf"
-sudo cp "$DIR/php-fpm.conf" /etc/nginx/fastcgi.conf
+sudo cp "$DIR/fastcgi.conf" /etc/nginx/fastcgi.conf
 sudo cp "$DIR/default.conf" /etc/nginx/sites-enabled/default.conf
-cat /etc/nginx/fastcgi.conf
 
 # Start the servers.
 sudo $PHP_FPM_BIN --fpm-config "$DIR/php-fpm.conf"
