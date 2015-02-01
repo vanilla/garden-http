@@ -9,7 +9,7 @@ server {
     # This is the php handler for all garden requests.
     location ~* "^/_index\.php(/|$)" {
         internal;
-        # include                   fastcgi.conf;
+        include                   fastcgi.conf;
         # fastcgi_param             SCRIPT_NAME /index.php;
         fastcgi_param             PHP_SELF $fastcgi_script_name;
         fastcgi_param             SCRIPT_FILENAME $document_root/index.php;
