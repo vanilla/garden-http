@@ -19,7 +19,8 @@ PHP_FPM_LISTEN="$DIR/php-fpm.sock"
 sudo sed -e "s|{USER}|$USER|g" -e "s|{PHP_FPM_LISTEN}|$PHP_FPM_LISTEN|g" < "$DIR/php-fpm.conf.tpl" > "$DIR/php-fpm.conf"
 
 # Build the default site nginx conf.
-sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{PHP_FPM_LISTEN}|$PHP_FPM_LISTEN|g" < "$DIR/php-fpm.conf.tpl" > /etc/nginx/sites-enabled/default.conf
+sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{PHP_FPM_LISTEN}|$PHP_FPM_LISTEN|g" < "$DIR/php-fpm.conf.tpl" > "$DIR/default.conf"
+sudo cp "$DIR/default.conf" /etc/nginx/sites-enabled/default.conf
 
 # Start the servers.
 sudo $PHP_FPM_BIN --fpm-config "$DIR/php-fpm.conf"
