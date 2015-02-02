@@ -16,7 +16,9 @@ install:
     - travis/install.sh
     - composer install
 
-script: phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
+script:
+    - curl 'http://garden-http.dev/hello.json'
+    - phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
 
 addons:
   hosts:

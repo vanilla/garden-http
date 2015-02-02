@@ -18,6 +18,10 @@ require_once __DIR__.'/../vendor/autoload.php';
 $app = new Application();
 
 // Register routes.
+$app->route('/hello.json', function() {
+    return [200, [], 'Hello world'];
+});
+
 $app->route('/request(/.+)?\.json', function() use ($app) {
     $request = $app->request;
 
