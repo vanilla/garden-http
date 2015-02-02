@@ -16,7 +16,7 @@ install:
     - travis/install.sh
 #    - composer install
 
-script: echo "Hello world" # phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
+script: phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
 
 addons:
   hosts:
