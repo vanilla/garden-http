@@ -14,7 +14,7 @@ matrix:
 
 install:
     - travis/install.sh
-#    - composer install
+    - composer install
 
 script: phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
 
