@@ -58,7 +58,7 @@ class HttpClient {
     public function delete($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
 
-        return $this->request(HttpRequest::METHOD_DELETE, $uri, null, $headers, $options);
+        return $this->request(HttpRequest::METHOD_DELETE, $uri, '', $headers, $options);
     }
 
     /**
@@ -71,7 +71,7 @@ class HttpClient {
     public function get($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
 
-        return $this->request(HttpRequest::METHOD_GET, $uri, null, $headers, $options);
+        return $this->request(HttpRequest::METHOD_GET, $uri, '', $headers, $options);
     }
 
     public function handleErrorResponse(HttpResponse $response) {
@@ -95,7 +95,7 @@ class HttpClient {
      */
     public function head($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
-        return $this->request(HttpRequest::METHOD_HEAD, $uri, null, $headers, $options);
+        return $this->request(HttpRequest::METHOD_HEAD, $uri, '', $headers, $options);
     }
 
 
@@ -107,7 +107,7 @@ class HttpClient {
      */
     public function options($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
-        return $this->request(HttpRequest::METHOD_OPTIONS, $uri, null, $headers, $options);
+        return $this->request(HttpRequest::METHOD_OPTIONS, $uri, '', $headers, $options);
     }
 
     /**

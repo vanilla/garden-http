@@ -127,7 +127,7 @@ class HttpRequest extends HttpMessage {
         $body = $this->body;
 
         if (is_string($body)) {
-            return $body;
+            return (string)$body;
         }
 
         $contentType = $this->getHeader('Content-Type');
