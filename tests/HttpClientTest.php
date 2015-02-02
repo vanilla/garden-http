@@ -39,6 +39,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     /**
      * @param $method The HTTP method to test.
      * @dataProvider provideMethods
+     * @throws \Exception Throws an exception when the returned data is a string.
      */
     public function testHttpMethodNames($method) {
         $api = $this->getApi();
@@ -47,6 +48,10 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
         /* @var HttpResponse $r */
         $r = $api->$methodName('/request.json');
         $data = $r->getBody();
+
+        if (is_string($data)) {
+            throw new \Exception("Invalid response: $data.", 500);
+        }
 
         $this->assertEquals(200, $r->getStatusCode());
         if ($method === HttpRequest::METHOD_HEAD) {
