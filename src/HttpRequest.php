@@ -11,6 +11,7 @@ namespace Garden\Http;
 class HttpRequest extends HttpMessage {
     /// Constants ///
 
+    const METHOD_DELETE = 'DELETE';
     const METHOD_GET = 'GET';
     const METHOD_HEAD = 'HEAD';
     const METHOD_OPTIONS = 'OPTIONS';

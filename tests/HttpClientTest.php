@@ -113,6 +113,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
             HttpRequest::METHOD_PATCH => [HttpRequest::METHOD_PATCH],
             HttpRequest::METHOD_POST => [HttpRequest::METHOD_POST],
             HttpRequest::METHOD_PUT => [HttpRequest::METHOD_PUT],
+            HttpRequest::METHOD_DELETE => [HttpRequest::METHOD_DELETE],
         ];
 
         return $arr;
