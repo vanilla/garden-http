@@ -19,6 +19,8 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     public function getApi() {
         $api = new HttpClient();
         $api->setBaseUrl('http://garden-http.dev/')
+            ->setDefaultHeader('Referer', basename(str_replace('\\', '/', __CLASS__)))
+            ->setDefaultHeader('Content-Type', 'application/json')
             ->setThrowExceptions(true);
         return $api;
     }
@@ -42,11 +44,11 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
      * @throws \Exception Throws an exception when the returned data is a string.
      */
     public function testHttpMethodNames($method) {
-        $api = $this->getApi();
+        $api = $this->getApi()->setThrowExceptions(false);
         $methodName = strtolower($method);
 
         /* @var HttpResponse $r */
-        $r = $api->$methodName('/echo.json');
+        $r = $api->$methodName('/echo.json', ['foo' => 'bar']);
         $data = $r->getBody();
 
         if (is_string($data)) {
