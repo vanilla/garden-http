@@ -74,24 +74,8 @@ class HttpRequest extends HttpMessage {
     protected function createCurl() {
         $ch = curl_init();
 
-        // Decode the headers.
-        $headers = [];
-        foreach ($this->headers as $key => $values) {
-            foreach ($values as $line) {
-                $headers[] = "$key: $line";
-            }
-        }
-
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifyPeer);
-        curl_setopt($ch, CURLOPT_ENCODING, ''); //"utf-8");
-
-        // Add the body.
+        // Add the body first so we can calculate a content length.
+        $body = '';
         if ($this->method === self::METHOD_HEAD) {
             curl_setopt($ch, CURLOPT_NOBODY, true);
         } elseif ($this->method !== self::METHOD_GET) {
@@ -102,6 +86,27 @@ class HttpRequest extends HttpMessage {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
             }
         }
+
+        // Decode the headers.
+        $headers = [];
+        foreach ($this->headers as $key => $values) {
+            foreach ($values as $line) {
+                $headers[] = "$key: $line";
+            }
+        }
+
+        if (!$this->getHeader('Content-Length') && is_string($body)) {
+            $headers[] = 'Content-Length: '.strlen($body);
+        }
+
+        curl_setopt($ch, CURLOPT_URL, $this->url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifyPeer);
+        curl_setopt($ch, CURLOPT_ENCODING, ''); //"utf-8");
 
         if (!empty($this->username)) {
             curl_setopt($ch, CURLOPT_USERPWD, $this->username.":".((empty($this->password)) ? "" : $this->password));
