@@ -95,8 +95,12 @@ class HttpRequest extends HttpMessage {
             }
         }
 
-        if (!$this->getHeader('Content-Length') && is_string($body)) {
+        if (is_string($body) && !isset($this->headers['Content-Length'])) {
             $headers[] = 'Content-Length: '.strlen($body);
+        }
+
+        if (!isset($this->headers['Expect'])) {
+            $headers[] = 'Expect:';
         }
 
         curl_setopt($ch, CURLOPT_URL, $this->url);
