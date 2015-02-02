@@ -88,6 +88,19 @@ class HttpClient {
 
     /**
      * @param $uri
+     * @param array $query
+     * @param array $headers
+     * @param array $options
+     * @return HttpResponse
+     */
+    public function head($uri, array $query = [], array $headers = [], $options = []) {
+        $uri = static::appendQuery($uri, $query);
+        return $this->request(HttpRequest::METHOD_HEAD, $uri, null, $headers, $options);
+    }
+
+
+    /**
+     * @param $uri
      * @param array $headers
      * @param array $options
      * @return HttpResponse
@@ -104,7 +117,7 @@ class HttpClient {
      * @param array $options
      * @return HttpResponse
      */
-    public function patch($uri, $body, array $headers = [], $options = []) {
+    public function patch($uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_PATCH, $uri, $body, $headers, $options);
     }
 
@@ -115,7 +128,7 @@ class HttpClient {
      * @param array $options
      * @return HttpResponse
      */
-    public function post($uri, $body, array $headers = [], $options = []) {
+    public function post($uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_POST, $uri, $body, $headers, $options);
     }
 
@@ -126,7 +139,7 @@ class HttpClient {
      * @param array $options
      * @return HttpResponse
      */
-    public function put($uri, $body, array $headers = [], $options = []) {
+    public function put($uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_PUT, $uri, $body, $headers, $options);
     }
 

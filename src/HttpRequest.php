@@ -89,14 +89,17 @@ class HttpRequest extends HttpMessage {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifyPeer);
-        curl_setopt($ch, CURLOPT_ENCODING, "utf-8");
+        curl_setopt($ch, CURLOPT_ENCODING, ''); //"utf-8");
 
         // Add the body.
-        if ($this->method !== self::METHOD_GET) {
+        if ($this->method === self::METHOD_HEAD) {
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+        } elseif ($this->method !== self::METHOD_GET) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->method);
+
             $body = $this->getCurlBody();
             if ($body) {
-                curl_setopt($ch, CURLOPT_PORT, $body);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
             }
         }
 
@@ -143,6 +146,7 @@ class HttpRequest extends HttpMessage {
             $status = array_shift($rawHeaders);
             $rawBody = substr($response, $header_size);
         } else {
+            $error = curl_error($ch);
             $status = $code;
             $rawHeaders = [];
             $rawBody = curl_error($ch);
@@ -155,6 +159,7 @@ class HttpRequest extends HttpMessage {
     public function send() {
         $ch = $this->createCurl();
         $response = $this->execCurl($ch);
+        curl_close($ch);
 
         return $response;
     }

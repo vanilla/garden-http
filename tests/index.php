@@ -28,7 +28,8 @@ $app->route('/request(/.+)?\.json', function() use ($app) {
         'port' => $request->getPort(),
         'headers' => $request->getHeaders(),
         'query' => $request->getQuery(),
-        'body' => $request->getInput()
+        'body' => $request->getInput(),
+        'foo' => 'bar'
     ];
 
     return $result;

@@ -23,14 +23,42 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
         return $api;
     }
 
-
-    public function testServerAccess() {
+    /**
+     * A simple test to see if we have access to the server.
+     */
+    public function testAccess() {
         $api = $this->getApi();
 
         $response = $api->get('/request.json');
         $data = $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('bar', $data['foo']);
     }
 
+    /**
+     * @param $method The HTTP method to test.
+     * @dataProvider provideMethods
+     */
+    public function testHttpMethodNames($method) {
+        $api = $this->getApi();
+        $methodName = strtolower($method);
+
+        /* @var HttpResponse $r */
+        $r = $api->$methodName('/request.json');
+        $data = $r->getBody();
+
+        $this->assertEquals(200, $r->getStatusCode());
+        if ($method === HttpRequest::METHOD_HEAD) {
+            $this->assertNull($data);
+        } else {
+            $this->assertEquals($method, $data['method']);
+        }
+    }
+
+    /**
+     * Test basic HTTP authorization.
+     */
     public function testBasicAuth() {
         $api = $this->getApi();
         $api->setDefaultOption('username', 'foo')
@@ -38,5 +66,48 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
         $response = $api->get('/basic-protected/foo/bar.json');
         $data = $response->getBody();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('You are in.', $data['message']);
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionCode 401
+     */
+    public function testBasicAuthWrongUsername() {
+        $api = $this->getApi();
+        $api->setDefaultOption('username', 'foo')
+            ->setDefaultOption('password', 'bar');
+
+        $response = $api->get('/basic-protected/fooz/bar.json');
+        $data = $response->getBody();
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionCode 401
+     */
+    public function testBasicWrongPassword() {
+        $api = $this->getApi();
+        $api->setDefaultOption('username', 'foo')
+            ->setDefaultOption('password', 'bar');
+
+        $response = $api->get('/basic-protected/foo/baz.json');
+        $data = $response->getBody();
+    }
+
+
+    public function provideMethods() {
+        $arr = [
+            HttpRequest::METHOD_GET => [HttpRequest::METHOD_GET],
+            HttpRequest::METHOD_HEAD => [HttpRequest::METHOD_HEAD],
+            HttpRequest::METHOD_OPTIONS => [HttpRequest::METHOD_OPTIONS],
+            HttpRequest::METHOD_PATCH => [HttpRequest::METHOD_PATCH],
+            HttpRequest::METHOD_POST => [HttpRequest::METHOD_POST],
+            HttpRequest::METHOD_PUT => [HttpRequest::METHOD_PUT],
+        ];
+
+        return $arr;
     }
 }
