@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vanilla/garden.git",
-                "reference": "a788c36fdbf5db40f2023acc01352b078146b37d"
+                "reference": "86462ccc0e72b6fdc7d865933fe6bac91a52c919"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vanilla/garden/zipball/a788c36fdbf5db40f2023acc01352b078146b37d",
-                "reference": "a788c36fdbf5db40f2023acc01352b078146b37d",
+                "url": "https://api.github.com/repos/vanilla/garden/zipball/86462ccc0e72b6fdc7d865933fe6bac91a52c919",
+                "reference": "86462ccc0e72b6fdc7d865933fe6bac91a52c919",
                 "shasum": ""
             },
             "require": {
@@ -75,7 +75,7 @@
                 "forum": "http://vanillaforums.org/discussions",
                 "source": "https://github.com/vanilla/garden"
             },
-            "time": "2014-11-19 23:30:29"
+            "time": "2015-02-02 15:33:09"
         }
     ],
     "aliases": [],

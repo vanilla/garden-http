@@ -29,7 +29,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     public function testAccess() {
         $api = $this->getApi();
 
-        $response = $api->get('/request.json');
+        $response = $api->get('/echo.json');
         $data = $response->getBody();
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -46,7 +46,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
         $methodName = strtolower($method);
 
         /* @var HttpResponse $r */
-        $r = $api->$methodName('/request.json');
+        $r = $api->$methodName('/echo.json');
         $data = $r->getBody();
 
         if (is_string($data)) {

@@ -22,7 +22,7 @@ $app->route('/hello.json', function() {
     return [200, [], 'Hello world'];
 });
 
-$app->route('/request(/.+)?\.json', function() use ($app) {
+$app->route('/echo(/.+)?\.json', function() use ($app) {
     $request = $app->request;
 
     $result = [
