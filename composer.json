@@ -1,0 +1,31 @@
+{
+	"name": "vanilla/garden-http",
+	"description": "An HTTP client library for building RESTful API clients.",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Todd Burry",
+			"email": "todd@vanillaforums.com"
+		}
+	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:vanilla/garden.git"
+		}
+	],
+	"require": {},
+	"require-dev": {
+		"vanilla/garden": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"Garden\\Http\\": "src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Garden\\Http\\Tests\\": "tests"
+		}
+	}
+}

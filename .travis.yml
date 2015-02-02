@@ -1,8 +1,8 @@
 language: php
 
 php:
-    - 5.4
-#    - 5.5
+#    - 5.4
+    - 5.5
 #    - 5.6
 #    - hhvm
 #    - hhvm-nightly
@@ -20,7 +20,7 @@ script: echo "Hello world" # phpunit -c tests/phpunit.xml.dist --coverage-clover
 
 addons:
   hosts:
-    - garden-apiclient.dev
+    - garden-http.dev
 
 #before_script:
 #    - mysql -uroot -e 'create database if not exists phpunit_garden;'
