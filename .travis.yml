@@ -1,16 +1,16 @@
 language: php
 
 php:
-#    - 5.4
+    - 5.4
     - 5.5
-#    - 5.6
-#    - hhvm
+    - 5.6
+    - hhvm
 #    - hhvm-nightly
 
 matrix:
     fast_finish: true
-#    allow_failures:
-#        - php: hhvm-nightly
+    allow_failures:
+        - php: hhvm
 
 install:
     - travis/install.sh
@@ -27,6 +27,6 @@ addons:
 #before_script:
 #    - mysql -uroot -e 'create database if not exists phpunit_garden;'
 
-#after_script:
-#    - wget https://scrutinizer-ci.com/ocular.phar
-#    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+after_script:
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
