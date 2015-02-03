@@ -74,8 +74,8 @@ class HttpClient {
         return $this->request(HttpRequest::METHOD_GET, $uri, '', $headers, $options);
     }
 
-    public function handleErrorResponse(HttpResponse $response) {
-        if ($this->throwExceptions) {
+    public function handleErrorResponse(HttpResponse $response, $options = []) {
+        if ($this->val('throw', $options, $this->throwExceptions)) {
             $body = $response->getBody();
             if (is_array($body)) {
                 $message = $this->val('message', $body, $response->getReasonPhrase());
@@ -156,7 +156,7 @@ class HttpClient {
         $response = $request->send();
 
         if (!$response->isResponseClass('2xx')) {
-            $this->handleErrorResponse($response);
+            $this->handleErrorResponse($response, $options);
         }
 
         return $response;
