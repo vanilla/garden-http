@@ -165,7 +165,7 @@ class HttpRequest extends HttpMessage {
             $rawBody = curl_error($ch);
         }
 
-        $result = new HttpResponse($status, $rawHeaders, $rawBody, $info);
+        $result = new HttpResponse($status, $rawHeaders, $rawBody);
         return $result;
     }
 
