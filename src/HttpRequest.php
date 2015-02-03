@@ -160,7 +160,6 @@ class HttpRequest extends HttpMessage {
             $status = array_shift($rawHeaders);
             $rawBody = substr($response, $header_size);
         } else {
-            $error = curl_error($ch);
             $status = $code;
             $rawHeaders = [];
             $rawBody = curl_error($ch);

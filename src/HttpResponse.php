@@ -17,8 +17,6 @@ class HttpResponse extends HttpMessage {
 
     protected $rawBody;
 
-    protected $curlInfo;
-
     /**
      * @var array HTTP response codes and messages.
      */
@@ -82,9 +80,8 @@ class HttpResponse extends HttpMessage {
      * @param int $status The http response status.
      * @param mixed $headers An array of response headers.
      * @param string $rawBody The raw body of the response.
-     * @param array $curlInfo The array returned from a call to {@link curl_getinfo()}.
      */
-    public function __construct($status = 0, $headers = '', $rawBody = '', array $curlInfo = []) {
+    public function __construct($status = 0, $headers = '', $rawBody = '') {
         $this->setStatus($status);
         $this->headers = static::parseHeaders($headers);
         $this->rawBody = $rawBody;
