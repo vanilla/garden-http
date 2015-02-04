@@ -117,37 +117,12 @@ abstract class HttpMessage {
     }
 
     /**
-     * Normalize an array of headers so they are all internally consistent for look ups.
-     *
-     * @param array $headers The array of headers to normalize.
-     * @return array Returns an array of normalized headers.
-     */
-    private static function normalizeHeaders($headers) {
-        $result = [];
-        foreach ($headers as $key => $value) {
-            $key = static::normalizeHeaderName($key);
-            if (is_scalar($value)) {
-                $value = [(string)$value];
-            } elseif (!is_array($value)) {
-                continue;
-            }
-
-            if (isset($result[$key])) {
-                $result[$key] = array_merge($result[$key], $value);
-            } else {
-                $result[$key] = $value;
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Parse the http response headers from a response.
      *
      * @param mixed $headers Either the header string from a curl response or an array of header lines.
      * @return array
      */
-    protected function parseHeaders($headers) {
+    private function parseHeaders($headers) {
         if (is_string($headers)) {
             $headers = explode("\r\n", $headers);
         }
