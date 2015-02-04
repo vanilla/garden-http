@@ -31,3 +31,6 @@ addons:
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+notifications:
+    hipchat: vFct2Mdr+oodEq2g3XogBd2vMkBk4Z9KfTOOpK9aZqXbaLop0J2Etqu8yYHftcvl7AsJ/Yl/rgUYOdaFYKWoq5M+22lkf+PjZxoDDEqT2GwPQUaalUF8wi+ykr4Z8S3872gClbbQul3hn3mhSF47pyiQBQZiqLiLSr8L3rgWo1Q=
