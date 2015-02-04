@@ -53,14 +53,27 @@ class HttpRequest extends HttpMessage {
 
     /// Methods ///
 
+    /**
+     * Initialize an instance of the {@link HttpRequest} class.
+     *
+     * @param string $method The HTTP method of the request.
+     * @param string $url The URL where the request will be sent.
+     * @param string|array $body The body of the request.
+     * @param array $headers An array of http headers to be sent with the request.
+     * @param array $options An array of extra options.
+     *
+     * - protocolVersion: The HTTP protocol version.
+     * - verifyPeer: Whether or not to verify an SSL peer. Default true.
+     * - username/password: Used to send basic HTTP authentication with the request.
+     */
     public function __construct($method, $url, $body, array $headers = [], array $options = []) {
         $this->method = strtoupper($method);
         $this->url = $url;
         $this->body = $body;
-        $this->headers = static::normalizeHeaders($headers);
+        $this->setHeaders($headers);
 
-        if (!isset($this->headers['User-Agent'])) {
-            $this->headers['User-Agent'] = ['garden-http/1.0.0 (HttpRequest)'];
+        if (!$this->hasHeader('User-Agent')) {
+            $this->setHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
         }
 
         $options += [
@@ -94,19 +107,25 @@ class HttpRequest extends HttpMessage {
 
         // Decode the headers.
         $headers = [];
-        foreach ($this->headers as $key => $values) {
+        foreach ($this->getHeaders() as $key => $values) {
             foreach ($values as $line) {
                 $headers[] = "$key: $line";
             }
         }
 
-        if (is_string($body) && !isset($this->headers['Content-Length'])) {
+        if (is_string($body) && !$this->hasHeader('Content-Length')) {
             $headers[] = 'Content-Length: '.strlen($body);
         }
 
-        if (!isset($this->headers['Expect'])) {
+        if (!$this->hasHeader('Expect')) {
             $headers[] = 'Expect:';
         }
+
+        curl_setopt(
+            $ch,
+            CURLOPT_HTTP_VERSION,
+            $this->getProtocolVersion() == '1.0' ? CURL_HTTP_VERSION_1_0 : CURL_HTTP_VERSION_1_1
+        );
 
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

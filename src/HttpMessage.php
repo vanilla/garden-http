@@ -17,9 +17,14 @@ class HttpMessage {
     protected $body;
 
     /**
-     * @var array
+     * @var array An array of headers stored by lower cased header name.
      */
-    protected $headers = [];
+    private $headers = [];
+
+    /**
+     * @var array An array of header names as specified by the various header methods.
+     */
+    private $headerNames = [];
 
     /**
      * @var string The HTTP protocol version of the request.
@@ -38,8 +43,9 @@ class HttpMessage {
      * @return HttpMessage $this Returns `$this` for fluent calls.
      */
     public function addHeader($name, $value) {
-        $name = static::normalizeHeaderName($name);
-        $this->headers[$name][] = $value;
+        $key = strtolower($name);
+        $this->headerNames[$key] = $name;
+        $this->headers[$key][] = $value;
 
         return $this;
     }
@@ -64,26 +70,50 @@ class HttpMessage {
     }
 
     /**
+     * Retrieves all message headers.
+     *
+     * The keys represent the header name as it will be sent over the wire, and
+     * each value is an array of strings associated with the header.
+     *
+     * While header names are not case-sensitive, getHeaders() will preserve the
+     * exact case in which headers were originally specified.
+     *
+     * @return array Returns an associative array of the message's headers.
+     * Each key is a header name, and each value is an an array of strings.
+     */
+    public function getHeaders() {
+        $result = [];
+
+        foreach ($this->headers as $key => $lines) {
+            $name = $this->headerNames[$key];
+            $result[$name] = $lines;
+        }
+
+        return $result;
+    }
+
+    /**
      * Retrieves a header by the given case-insensitive name as an array of strings.
      *
      * @param string $name Case-insensitive header field name.
      * @return string[]
      */
     public function getHeaderLines($name) {
-        $name = static::normalizeHeaderName($name);
-        $result = isset($this->headers[$name]) ? $this->headers[$name] : [];
+        $key = strtolower($name);
+        $result = isset($this->headers[$key]) ? $this->headers[$key] : [];
         return $result;
     }
 
     /**
-     * Normalize a header field name to follow the general HTTP header `Capital-Dash-Separated` convention.
+     * Checks if a header exists by the given case-insensitive name.
      *
-     * @param string $name The header name to normalize.
-     * @return string Returns the normalized header name.
+     * @param string $header Case-insensitive header name.
+     * @return bool Returns true if any header names match the given header
+     *     name using a case-insensitive string comparison. Returns false if
+     *     no matching header name is found in the message.
      */
-    protected static function normalizeHeaderName($name) {
-        $result = str_replace(' ', '-', ucwords(str_replace(['-', '_'], ' ', strtolower($name))));
-        return $result;
+    public function hasHeader($header) {
+        return !empty($this->headers[strtolower($header)]);
     }
 
     /**
@@ -92,7 +122,7 @@ class HttpMessage {
      * @param array $headers The array of headers to normalize.
      * @return array Returns an array of normalized headers.
      */
-    protected static function normalizeHeaders($headers) {
+    private static function normalizeHeaders($headers) {
         $result = [];
         foreach ($headers as $key => $value) {
             $key = static::normalizeHeaderName($key);
@@ -141,5 +171,71 @@ class HttpMessage {
         }
 
         return $result;
+    }
+
+    /**
+     * Set a header by case-insensitive name. Setting a header will overwrite the current value for the header.
+     *
+     * @param string $name The name of the header.
+     * @param string|string[]|null $value The value of the new header. Pass `null` to remove the header.
+     * @return HttpMessage Returns $this for fluent calls.
+     */
+    public function setHeader($name, $value) {
+        $key = strtolower($name);
+
+        if ($value === null) {
+            unset($this->headerNames[$key], $this->headers[$key]);
+        } else {
+            $this->headerNames[$key] = $name;
+            $this->headers[$key] = (array)$value;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set all of the headers. This will overwrite any existing headers.
+     *
+     * @param array $headers An array of headers to set. This array can be in the following form.
+     *
+     * - ["Header-Name" => "value", ...]
+     * - ["Header-Name" => ["lines, ...], ...]
+     * - ["Header-Name: value", ...]
+     * - Any combination of the above formats.
+     *
+     * @return HttMessage Returns `$this` for fluent calls.
+     */
+    public function setHeaders(array $headers) {
+        $this->headers = [];
+        $this->headerNames = [];
+
+        $headers = $this->parseHeaders($headers);
+        foreach ($headers as $name => $lines) {
+            $key = strtolower($name);
+            $this->headers[$key] = $lines;
+            $this->headerNames[$key] = $name;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get the protocolVersion.
+     *
+     * @return string Returns the protocolVersion.
+     */
+    public function getProtocolVersion() {
+        return $this->protocolVersion;
+    }
+
+    /**
+     * Set the protocolVersion.
+     *
+     * @param string $protocolVersion
+     * @return HttpMessage Returns `$this` for fluent calls.
+     */
+    public function setProtocolVersion($protocolVersion) {
+        $this->protocolVersion = $protocolVersion;
+        return $this;
     }
 }

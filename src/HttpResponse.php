@@ -75,7 +75,7 @@ class HttpResponse extends HttpMessage {
     /// Methods ///
 
     /**
-     * Initialize an instance of the {@link RestResponse} object.
+     * Initialize an instance of the {@link HttpResponse} object.
      *
      * @param int $status The http response status.
      * @param mixed $headers An array of response headers.
@@ -83,7 +83,7 @@ class HttpResponse extends HttpMessage {
      */
     public function __construct($status = 0, $headers = '', $rawBody = '') {
         $this->setStatus($status);
-        $this->headers = static::parseHeaders($headers);
+        $this->setHeaders($headers);
         $this->rawBody = $rawBody;
     }
 
