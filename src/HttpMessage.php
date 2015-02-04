@@ -8,7 +8,7 @@
 namespace Garden\Http;
 
 
-class HttpMessage {
+abstract class HttpMessage {
     /// Properties ///
 
     /**
