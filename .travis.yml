@@ -35,7 +35,7 @@ after_script:
 notifications:
     hipchat:
         rooms:
-            - vFct2Mdr+oodEq2g3XogBd2vMkBk4Z9KfTOOpK9aZqXbaLop0J2Etqu8yYHftcvl7AsJ/Yl/rgUYOdaFYKWoq5M+22lkf+PjZxoDDEqT2GwPQUaalUF8wi+ykr4Z8S3872gClbbQul3hn3mhSF47pyiQBQZiqLiLSr8L3rgWo1Q=
+            - zdxegI0dfQAmrnfzKg303gZ3Y3PINqydisusLfF8lVud7+XRSbKslc99T2kmSMGZF4lrQ9L/+uhCU+M8I0OrnNTxDfA6in+TDpi4i5FJasVRUKb9LAWhncLV0n3232IwozXLC2uJlbDlNPkW0rO+z+7885GAy4WTYf568pg4cUA=
         template:
              - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
         notify: true
