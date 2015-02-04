@@ -35,7 +35,9 @@ after_script:
 notifications:
     hipchat:
         rooms:
-            - zdxegI0dfQAmrnfzKg303gZ3Y3PINqydisusLfF8lVud7+XRSbKslc99T2kmSMGZF4lrQ9L/+uhCU+M8I0OrnNTxDfA6in+TDpi4i5FJasVRUKb9LAWhncLV0n3232IwozXLC2uJlbDlNPkW0rO+z+7885GAy4WTYf568pg4cUA=
-        template:
-             - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
-        notify: true
+            secure: JQ9QA+PYliSPPxYZ89/SDLOgR0ePGMrJJkaxlP8AqViE0M3zeqmFBvW2zj1CdAl2fXFLrTWu6CFm4KzX66gM9KKmW97TUwGtgapbs3m6OT8zg2yn8jmTseUKB9Sovdo7BzyCKpsJld70tfltk9GWrngqJYww35jWsyhZf7ER4Pw=
+    template:
+        - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
+    notify: true
+    slack:
+        secure: ynpl6cvDaoB1jWNtT6buzX/TJNSVomV6uqVV8iEKj0EwRD4eueDy/MyiGDifg4qpWtlEPuXPVdBQMi4jc3JrJP81VumrPv5QCAf3Z3Yl2UhC8LGWJndwj1tWQwXzjAzZExA+6/wScNFDU7VEHkKxbzbkCLO5fh5WL5tFeSUPx9Q=
