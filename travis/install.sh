@@ -16,9 +16,14 @@ SOCKET="$DIR/php-fpm.sock"
 
 if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ] || [ "$TRAVIS_PHP_VERSION" = 'hhvm_nightly' ]
 then
-    LOG_PATH="$DIR/hhvm.log"
+    HHVM_LOG_PATH="$DIR/hhvm.log"
 
-    sudo hhvm --mode=daemon --user="$USER" -vServer.Type=fastcgi -vLog.File="$LOG_PATH"
+    sudo hhvm \
+        --mode=daemon \
+        --user="$USER" \
+        -vServer.Type=fastcgi \
+        -vServer.FileSocket="$SOCKET" \
+        -vLog.File="$HHVM_LOG_PATH"
 else
     PHP_FPM_BIN="$HOME/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm"
     PHP_FPM_CONF="$DIR/php-fpm.conf"
@@ -27,7 +32,7 @@ else
     sudo sed -e "s|{USER}|$USER|g" -e "s|{PHP_FPM_LISTEN}|$SOCKET|g" < "$DIR/php-fpm.conf.tpl" > "$DIR/php-fpm.conf"
 
     # Start php-fpm
-    sudo ${PHP_FPM_BIN} --fpm-config "$DIR/php-fpm.conf"
+    sudo "$PHP_FPM_BIN" --fpm-config "$DIR/php-fpm.conf"
 fi
 
 # Build the default site nginx conf.
