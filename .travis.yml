@@ -22,15 +22,20 @@ script:
     - phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
 
 addons:
-  hosts:
-    - garden-http.dev
+    hosts:
+        - garden-http.dev
 
 #before_script:
 #    - mysql -uroot -e 'create database if not exists phpunit_garden;'
 
 after_script:
-    - wget https://scrutinizer-ci.com/ocular.phar
-    - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+- wget https://scrutinizer-ci.com/ocular.phar
+- php ocular.phar code-coverage:upload --format=php-clover coverage.clover
 
 notifications:
-    hipchat: vFct2Mdr+oodEq2g3XogBd2vMkBk4Z9KfTOOpK9aZqXbaLop0J2Etqu8yYHftcvl7AsJ/Yl/rgUYOdaFYKWoq5M+22lkf+PjZxoDDEqT2GwPQUaalUF8wi+ykr4Z8S3872gClbbQul3hn3mhSF47pyiQBQZiqLiLSr8L3rgWo1Q=
+    hipchat:
+        rooms:
+            - vFct2Mdr+oodEq2g3XogBd2vMkBk4Z9KfTOOpK9aZqXbaLop0J2Etqu8yYHftcvl7AsJ/Yl/rgUYOdaFYKWoq5M+22lkf+PjZxoDDEqT2GwPQUaalUF8wi+ykr4Z8S3872gClbbQul3hn3mhSF47pyiQBQZiqLiLSr8L3rgWo1Q=
+        template:
+             - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}'
+        notify: true
