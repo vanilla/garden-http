@@ -3,7 +3,7 @@
 [travis]
 user = {USER}
 group = {USER}
-listen = {SOCKET}
+listen = {SERVER}
 listen.mode = 0666
 pm = static
 pm.max_children = 5

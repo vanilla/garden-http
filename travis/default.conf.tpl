@@ -44,5 +44,5 @@ server {
 }
 
 upstream php-fpm {
-    server unix:{SOCKET};
+    server {SERVER};
 }
