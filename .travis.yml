@@ -13,8 +13,9 @@ matrix:
         - php: hhvm-nightly
 
 install:
-    - travis/install.sh
     - composer install
+    - travis/install-nginx.sh
+    - travis/install-nginx-setup.sh
 
 script:
     - curl 'http://garden-http.dev/hello.json'

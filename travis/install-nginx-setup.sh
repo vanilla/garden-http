@@ -3,9 +3,6 @@
 set -e
 set -x
 
-# Install nginx.
-sudo apt-get update
-sudo apt-get install -y nginx realpath
 sudo service nginx stop
 
 USER=$(whoami)
