@@ -72,10 +72,6 @@ class HttpRequest extends HttpMessage {
         $this->body = $body;
         $this->setHeaders($headers);
 
-        if (!$this->hasHeader('User-Agent')) {
-            $this->setHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
-        }
-
         $options += [
             'protocolVersion' => '1.1',
             'username' => '',

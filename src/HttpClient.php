@@ -21,6 +21,11 @@ class HttpClient {
 
     /// Methods ///
 
+    public function __construct($baseUrl = '') {
+        $this->baseUrl = $baseUrl;
+        $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
+    }
+
     /**
      * Construct and append a querystring array to a uri.
      *
