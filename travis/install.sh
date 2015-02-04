@@ -14,7 +14,7 @@ TRAVIS_PHP_VERSION=$(phpenv version-name)
 DOCUMENT_ROOT=$(realpath "$DIR/../tests")
 SOCKET="$DIR/php-fpm.sock"
 
-if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ] || [ "$TRAVIS_PHP_VERSION" = 'hhvm_nightly' ]
+if [ "$TRAVIS_PHP_VERSION" = 'hhvm' ] || [ "$TRAVIS_PHP_VERSION" = 'hhvm-nightly' ]
 then
     HHVM_LOG_PATH="$DIR/hhvm.log"
 
@@ -29,14 +29,14 @@ else
     PHP_FPM_CONF="$DIR/php-fpm.conf"
 
     # Build the php-fpm.conf.
-    sudo sed -e "s|{USER}|$USER|g" -e "s|{PHP_FPM_LISTEN}|$SOCKET|g" < "$DIR/php-fpm.conf.tpl" > "$DIR/php-fpm.conf"
+    sudo sed -e "s|{USER}|$USER|g" -e "s|{SOCKET}|$SOCKET|g" < "$DIR/php-fpm.conf.tpl" > "$DIR/php-fpm.conf"
 
     # Start php-fpm
     sudo "$PHP_FPM_BIN" --fpm-config "$DIR/php-fpm.conf"
 fi
 
 # Build the default site nginx conf.
-sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{PHP_FPM_LISTEN}|$SOCKET|g" < "$DIR/default.conf.tpl" > "$DIR/default.conf"
+sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{SOCKET}|$SOCKET|g" < "$DIR/default.conf.tpl" > "$DIR/default.conf"
 sudo cp "$DIR/fastcgi.conf" /etc/nginx/fastcgi.conf
 sudo cp "$DIR/default.conf" /etc/nginx/sites-enabled/default.conf
 
