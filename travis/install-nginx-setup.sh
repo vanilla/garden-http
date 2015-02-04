@@ -34,7 +34,7 @@ else
 fi
 
 # Build the default site nginx conf.
-sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{SERVER}|SERVER|g" < "$DIR/default.conf.tpl" > "$DIR/default.conf"
+sudo sed -e "s|{DOCUMENT_ROOT}|$DOCUMENT_ROOT|g" -e "s|{SERVER}|$SERVER|g" < "$DIR/default.conf.tpl" > "$DIR/default.conf"
 sudo cp "$DIR/fastcgi.conf" /etc/nginx/fastcgi.conf
 sudo cp "$DIR/default.conf" /etc/nginx/sites-enabled/default.conf
 
