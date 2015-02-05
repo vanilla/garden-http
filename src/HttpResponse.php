@@ -8,7 +8,7 @@
 namespace Garden\Http;
 
 
-class HttpResponse extends HttpMessage {
+class HttpResponse extends HttpMessage implements \ArrayAccess {
     /// Properties ///
 
     protected $statusCode;
@@ -124,6 +124,15 @@ class HttpResponse extends HttpMessage {
     }
 
     /**
+     * Determine if the response was successful.
+     *
+     * @return bool Returns `true` if the response was a successful 2xx code.
+     */
+    public function isSuccessful() {
+        return $this->isResponseClass('2xx');
+    }
+
+    /**
      * Get the raw body of the response.
 
      * @param string|null Set a new raw response body.
@@ -210,5 +219,72 @@ class HttpResponse extends HttpMessage {
     public function setReasonPhrase($reasonPhrase) {
         $this->reasonPhrase = $reasonPhrase;
         return $this;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Whether a offset exists
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @param mixed $offset <p>
+     * An offset to check for.
+     * </p>
+     * @return boolean true on success or false on failure.
+     * </p>
+     * <p>
+     * The return value will be casted to boolean if non-boolean was returned.
+     */
+    public function offsetExists($offset) {
+        $body = $this->getBody();
+        return isset($body[$offset]);
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to retrieve
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @param mixed $offset <p>
+     * The offset to retrieve.
+     * </p>
+     * @return mixed Can return all value types.
+     */
+    public function offsetGet($offset) {
+        $this->getBody();
+        return isset($this->body[$offset]) ? $this->body[$offset] : null;
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to set
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @param mixed $offset <p>
+     * The offset to assign the value to.
+     * </p>
+     * @param mixed $value <p>
+     * The value to set.
+     * </p>
+     * @return void
+     */
+    public function offsetSet($offset, $value) {
+        $this->getBody();
+        if (is_null($offset)) {
+            $this->body[] = $value;
+        } else {
+            $this->body[$offset] = $value;
+        }
+
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to unset
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @param mixed $offset <p>
+     * The offset to unset.
+     * </p>
+     * @return void
+     */
+    public function offsetUnset($offset) {
+        $this->getBody();
+        unset($this->body[$offset]);
     }
 }
