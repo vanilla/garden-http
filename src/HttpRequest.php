@@ -32,11 +32,6 @@ class HttpRequest extends HttpMessage {
     protected $url;
 
     /**
-     * @var mixed The body of the request.
-     */
-    protected $body;
-
-    /**
      * @var array
      */
     protected $auth;
@@ -62,9 +57,9 @@ class HttpRequest extends HttpMessage {
      * - username/password: Used to send basic HTTP authentication with the request.
      */
     public function __construct($method = HttpRequest::METHOD_GET, $url = '', $body = '', array $headers = [], array $options = []) {
-        $this->method = strtoupper($method);
-        $this->url = $url;
-        $this->body = $body;
+        $this->setMethod(strtoupper($method));
+        $this->setUrl($url);
+        $this->setBody($body);
         $this->setHeaders($headers);
 
         $options += [
@@ -73,9 +68,37 @@ class HttpRequest extends HttpMessage {
             'verifyPeer' => true
         ];
 
-        $this->protocolVersion = $options['protocolVersion'];
-        $this->auth = (array)$options['auth'];
-        $this->verifyPeer = $options['verifyPeer'];
+        $this->setProtocolVersion($options['protocolVersion']);
+        $this->setAuth($options['auth']);
+        $this->setVerifyPeer($options['verifyPeer']);
+    }
+
+    /**
+     * Get the auth.
+     *
+     * @return array Returns the auth.
+     */
+    public function getAuth() {
+        return $this->auth;
+    }
+
+    /**
+     * Set the auth.
+     *
+     * @param array $auth
+     * @return HttpRequest Returns `$this` for fluent calls.
+     */
+    public function setAuth(array $auth) {
+        $this->auth = $auth;
+        return $this;
+    }
+
+    public function send() {
+        $ch = $this->createCurl();
+        $response = $this->execCurl($ch);
+        curl_close($ch);
+
+        return $response;
     }
 
     protected function createCurl() {
@@ -88,7 +111,7 @@ class HttpRequest extends HttpMessage {
         } elseif ($this->method !== self::METHOD_GET) {
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->method);
 
-            $body = $this->getCurlBody();
+            $body = $this->makeCurlBody();
             if ($body) {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
             }
@@ -132,7 +155,12 @@ class HttpRequest extends HttpMessage {
         return $ch;
     }
 
-    protected function getCurlBody() {
+    /**
+     * Convert the request body into a format suitable to be passed to curl.
+     *
+     * @return string|array Returns the curl body.
+     */
+    protected function makeCurlBody() {
         $body = $this->body;
 
         if (is_string($body)) {
@@ -177,14 +205,6 @@ class HttpRequest extends HttpMessage {
         return $result;
     }
 
-    public function send() {
-        $ch = $this->createCurl();
-        $response = $this->execCurl($ch);
-        curl_close($ch);
-
-        return $response;
-    }
-
     /**
      * Get the HTTP method.
      *
@@ -204,4 +224,45 @@ class HttpRequest extends HttpMessage {
         $this->method = strtoupper($method);
         return $this;
     }
+
+    /**
+     * Get the url.
+     *
+     * @return string Returns the url.
+     */
+    public function getUrl() {
+        return $this->url;
+    }
+
+    /**
+     * Set the url.
+     *
+     * @param string $url
+     * @return HttpRequest Returns `$this` for fluent calls.
+     */
+    public function setUrl($url) {
+        $this->url = $url;
+        return $this;
+    }
+
+    /**
+     * Get the verifyPeer.
+     *
+     * @return boolean Returns the verifyPeer.
+     */
+    public function getVerifyPeer() {
+        return $this->verifyPeer;
+    }
+
+    /**
+     * Set the verifyPeer.
+     *
+     * @param boolean $verifyPeer
+     * @return HttpRequest Returns `$this` for fluent calls.
+     */
+    public function setVerifyPeer($verifyPeer) {
+        $this->verifyPeer = $verifyPeer;
+        return $this;
+    }
+
 }
