@@ -14,7 +14,10 @@
 			"url": "git@github.com:vanilla/garden.git"
 		}
 	],
-	"require": {},
+	"require": {
+		"php": ">=5.4.0",
+		"lib-curl": "*"
+	},
 	"require-dev": {
 		"vanilla/garden": "dev-master"
 	},
