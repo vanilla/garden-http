@@ -68,8 +68,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
      */
     public function testBasicAuth() {
         $api = $this->getApi();
-        $api->setDefaultOption('username', 'foo')
-            ->setDefaultOption('password', 'bar');
+        $api->setDefaultOption('auth', ['foo', 'bar']);
 
         $response = $api->get('/basic-protected/foo/bar.json');
         $data = $response->getBody();
@@ -81,11 +80,11 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \Exception
      * @expectedExceptionCode 401
+     * @expectedExceptionMessage Invalid username.
      */
     public function testBasicAuthWrongUsername() {
         $api = $this->getApi();
-        $api->setDefaultOption('username', 'foo')
-            ->setDefaultOption('password', 'bar');
+        $api->setDefaultOption('auth', ['foo', 'bar']);
 
         $response = $api->get('/basic-protected/fooz/bar.json');
         $data = $response->getBody();
@@ -94,11 +93,11 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \Exception
      * @expectedExceptionCode 401
+     * @expectedExceptionMessage Invalid password.
      */
     public function testBasicWrongPassword() {
         $api = $this->getApi();
-        $api->setDefaultOption('username', 'foo')
-            ->setDefaultOption('password', 'bar');
+        $api->setDefaultOption('auth', ['foo', 'bar']);
 
         $response = $api->get('/basic-protected/foo/baz.json');
         $data = $response->getBody();

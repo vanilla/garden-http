@@ -37,14 +37,9 @@ class HttpRequest extends HttpMessage {
     protected $body;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $username;
-
-    /**
-     * @var string
-     */
-    protected $password;
+    protected $auth;
 
     /**
      * @var bool
@@ -74,14 +69,12 @@ class HttpRequest extends HttpMessage {
 
         $options += [
             'protocolVersion' => '1.1',
-            'username' => '',
-            'password' => '',
+            'auth' => [],
             'verifyPeer' => true
         ];
 
         $this->protocolVersion = $options['protocolVersion'];
-        $this->username = $options['username'];
-        $this->password = $options['password'];
+        $this->auth = (array)$options['auth'];
         $this->verifyPeer = $options['verifyPeer'];
     }
 
@@ -132,8 +125,8 @@ class HttpRequest extends HttpMessage {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifyPeer);
         curl_setopt($ch, CURLOPT_ENCODING, ''); //"utf-8");
 
-        if (!empty($this->username)) {
-            curl_setopt($ch, CURLOPT_USERPWD, $this->username.":".((empty($this->password)) ? "" : $this->password));
+        if (!empty($this->auth)) {
+            curl_setopt($ch, CURLOPT_USERPWD, $this->auth[0].":".((empty($this->auth[1])) ? "" : $this->auth[1]));
         }
 
         return $ch;
