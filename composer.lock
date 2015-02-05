@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0528d2af622907c7d2b72d2b65a0fc73",
+    "hash": "dd0c09da417a5ec99e4895b2d74d3fe2",
     "packages": [],
     "packages-dev": [
         {
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vanilla/garden.git",
-                "reference": "86462ccc0e72b6fdc7d865933fe6bac91a52c919"
+                "reference": "53f953c64b430f81ec373930880f88fcc42bb4d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vanilla/garden/zipball/86462ccc0e72b6fdc7d865933fe6bac91a52c919",
-                "reference": "86462ccc0e72b6fdc7d865933fe6bac91a52c919",
+                "url": "https://api.github.com/repos/vanilla/garden/zipball/53f953c64b430f81ec373930880f88fcc42bb4d1",
+                "reference": "53f953c64b430f81ec373930880f88fcc42bb4d1",
                 "shasum": ""
             },
             "require": {
@@ -75,7 +75,7 @@
                 "forum": "http://vanillaforums.org/discussions",
                 "source": "https://github.com/vanilla/garden"
             },
-            "time": "2015-02-02 15:33:09"
+            "time": "2015-02-05 01:15:28"
         }
     ],
     "aliases": [],
@@ -85,6 +85,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.4.0",
+        "lib-curl": "*"
+    },
     "platform-dev": []
 }
