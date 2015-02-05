@@ -50,7 +50,7 @@ if ($response->isResponseClass('2xx')) {
 Throwing Exceptions
 -------------------
 
-You can tell the http client to throw an exception on unsuccessful requests.
+You can tell the HTTP client to throw an exception on unsuccessful requests.
 
 ```PHP
 use Garden\Http\HttpClient;
