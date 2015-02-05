@@ -54,13 +54,13 @@ class ReadmeTest extends \PHPUnit_Framework_TestCase {
 
     public function testBasicAuthentication() {
         $api = new HttpClient('https://httpbin.org');
-        $api->setDefaultOption('auth', ['username', 'password']);
+        $api->setDefaultOption('auth', ['username', 'password123']);
 
         // This request is made with the default authentication set above.
-        $r1 = $api->get('/basic-auth/username/password');
+        $r1 = $api->get('/basic-auth/username/password123');
 
         // This request overrides the basic authentication.
-        $r2 = $api->get('/basic-auth/username/password123', [], [], ['auth' => ['username', 'password123']]);
+        $r2 = $api->get('/basic-auth/username/password', [], [], ['auth' => ['username', 'password']]);
 
         $this->assertEquals(200, $r1->getStatusCode());
         $this->assertEquals(200, $r2->getStatusCode());

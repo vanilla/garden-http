@@ -45,12 +45,6 @@ if ($response->isResponseClass('2xx')) {
     // Access the response like an array.
     $posted = $response['json']; // should be ['foo' => 'bar']
 }
-
-if (!$response->isSuccessful()) {
-    $this->markTestSkipped();
-}
-$this->assertInternalType('array', $data);
-$this->assertSame(['foo' => 'bar'], $posted);
 ```
 
 Throwing Exceptions
@@ -81,11 +75,82 @@ You can specify a username and password for basic authentication using the `auth
 use Garden\Http\HttpClient;
 
 $api = new HttpClient('https://httpbin.org');
-$api->setDefaultOption('auth', ['username', 'password']);
+$api->setDefaultOption('auth', ['username', 'password123']);
 
 // This request is made with the default authentication set above.
-$r1 = $api->get('/basic-auth/username/password');
+$r1 = $api->get('/basic-auth/username/password123');
 
 // This request overrides the basic authentication.
-$r2 = $api->get('/basic-auth/username/password123', [], [], ['auth' => ['username', 'password123']]);
+$r2 = $api->get('/basic-auth/username/password', [], [], ['auth' => ['username', 'password']]);
+```
+
+Extending the HttpClient
+-------------------------
+
+If you are going to be calling the same API over and over again you might want to extend the `HttpClient` class
+to make an API client that is more convenient to reuse.
+
+```PHP
+use Garden\Http\HttpClient;
+
+// A custom HTTP client to access the github API.
+class GithubClient extends HttpClient {
+
+    // Set default options in your constructor.
+    public function __construct() {
+        parent::__construct('https://api.github.com');
+        $this
+            ->setDefaultHeader('Content-Type', 'application/json')
+            ->setThrowExceptions(true);
+    }
+
+    // Use a default header to authorize every request.
+    public function setAccessToken($token) {
+        $this->setDefaultHeader('Authorization', "Bearer $token");
+    }
+
+    // Get the repos for a given user.
+    public function getRepos($username = '') {
+        if ($username) {
+            return $this->get("/users/$username/repos");
+        } else {
+            return $this->get("/user/repos"); // my repos
+        }
+    }
+
+    // Create a new repo.
+    public function createRepo($name, $description, $private) {
+        return $this->post(
+            '/user/repos',
+            ['name' => $name, 'description' => $description, 'private' => $private]
+        );
+    }
+
+    // Get a repo.
+    public function getRepo($owner, $repo) {
+        return $this->get("/repos/$owner/$repo");
+    }
+
+    // Edit a repo.
+    public function editRepo($owner, $repo, $name, $description = null, $private = null) {
+        return $this->patch(
+            "/repos/$owner/$repo",
+            ['name' => $name, 'description' => $description, 'private' => $private]
+        );
+    }
+
+    // Different APIs will return different responses on errors.
+    // Override this method to handle errors in a way that is appropriate for the API.
+    public function handleErrorResponse(HttpResponse $response, $options = []) {
+        if ($this->val('throw', $options, $this->throwExceptions)) {
+            $body = $response->getBody();
+            if (is_array($body)) {
+                $message = $this->val('message', $body, $response->getReasonPhrase());
+            } else {
+                $message = $response->getReasonPhrase();
+            }
+            throw new \Exception($message, $response->getStatusCode());
+        }
+    }
+}
 ```
