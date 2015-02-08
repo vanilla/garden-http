@@ -1,7 +1,8 @@
 Garden HTTP
 ===========
 
-[![Build Status](https://img.shields.io/travis/vanilla/garden-http.svg?style=flat)](https://travis-ci.org/vanilla/garden-http) [![Coverage](http://img.shields.io/scrutinizer/coverage/g/vanilla/garden-http.svg?style=flat)](https://scrutinizer-ci.com/g/vanilla/garden-http/)
+[![Build Status](https://img.shields.io/travis/vanilla/garden-http.svg?style=flat-square)](https://travis-ci.org/vanilla/garden-http)
+[![Coverage](http://img.shields.io/scrutinizer/coverage/g/vanilla/garden-http.svg?style=flat-square)](https://scrutinizer-ci.com/g/vanilla/garden-http/)
 
 Garden HTTP is an unbloated HTTP client library for building RESTful API clients. It's meant to allow you to access
 people's APIs without having to copy/paste a bunch of cURL setup and without having to double the size of your codebase.
