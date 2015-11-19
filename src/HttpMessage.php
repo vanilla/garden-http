@@ -2,33 +2,29 @@
 /**
  * @author Todd Burry <todd@vanillaforums.com>
  * @copyright 2009-2014 Vanilla Forums Inc.
- * @license Proprietary
+ * @license MIT
  */
 
 namespace Garden\Http;
 
-
+/**
+ * Class HttpMessage
+ *
+ * @package Garden\Http
+ */
 abstract class HttpMessage {
-    /// Properties ///
 
-    /**
-     * @var
-     */
+    /** @var string  */
     protected $body;
-    /**
-     * @var string The HTTP protocol version of the request.
-     */
-    protected $protocolVersion = 1.1;
-    /**
-     * @var array An array of headers stored by lower cased header name.
-     */
-    private $headers = [];
-    /**
-     * @var array An array of header names as specified by the various header methods.
-     */
-    private $headerNames = [];
 
-    /// Methods ///
+    /** @var string The HTTP protocol version of the request. */
+    protected $protocolVersion = 1.1;
+
+    /** @var array An array of headers stored by lower cased header name. */
+    private $headers = [];
+
+    /** @var array An array of header names as specified by the various header methods. */
+    private $headerNames = [];
 
     /**
      * Adds a new header with the given value.

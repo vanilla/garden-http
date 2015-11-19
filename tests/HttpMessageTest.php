@@ -9,7 +9,11 @@ namespace Garden\Http\Tests;
 
 use Garden\Http\HttpRequest;
 
-
+/**
+ * Class HttpMessageTest
+ *
+ * @package Garden\Http\Tests
+ */
 class HttpMessageTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -68,6 +72,9 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('world', $msg->getHeader('foo'));
     }
 
+    /**
+     * Test removing a header.
+     */
     public function testHeaderRemove() {
         $msg = new HttpRequest();
 

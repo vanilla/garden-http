@@ -7,9 +7,12 @@
 
 namespace Garden\Http;
 
-
+/**
+ * Class HttpRequest
+ *
+ * @package Garden\Http
+ */
 class HttpRequest extends HttpMessage {
-    /// Constants ///
 
     const METHOD_DELETE = 'DELETE';
     const METHOD_GET = 'GET';
@@ -19,29 +22,17 @@ class HttpRequest extends HttpMessage {
     const METHOD_POST = 'POST';
     const METHOD_PUT = 'PUT';
 
-    /// Properties ///
-
-    /**
-     * @var string The HTTP method of the request.
-     */
+    /** @var string The HTTP method of the request. */
     protected $method;
 
-    /**
-     * @var string The URL of the request.
-     */
+    /** @var string The URL of the request. */
     protected $url;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $auth;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     protected $verifyPeer;
-
-    /// Methods ///
 
     /**
      * Initialize an instance of the {@link HttpRequest} class.
@@ -93,6 +84,11 @@ class HttpRequest extends HttpMessage {
         return $this;
     }
 
+    /**
+     * Send the prepared cURL request.
+     *
+     * @return HttpResponse
+     */
     public function send() {
         $ch = $this->createCurl();
         $response = $this->execCurl($ch);
@@ -101,6 +97,11 @@ class HttpRequest extends HttpMessage {
         return $response;
     }
 
+    /**
+     * Prepare a cURL request.
+     *
+     * @return resource
+     */
     protected function createCurl() {
         $ch = curl_init();
 

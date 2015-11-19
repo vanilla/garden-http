@@ -7,20 +7,30 @@
 
 namespace Garden\Http;
 
-
+/**
+ * Class HttpClient
+ *
+ * @package Garden\Http
+ */
 class HttpClient {
-    /// Properties ///
 
+    /** @var string  */
     protected $baseUrl;
 
+    /** @var array  */
     protected $defaultHeaders = [];
 
+    /** @var array  */
     protected $defaultOptions = [];
 
+    /** @var bool  */
     protected $throwExceptions = false;
 
-    /// Methods ///
-
+    /**
+     * Basic setup.
+     *
+     * @param string $baseUrl
+     */
     public function __construct($baseUrl = '') {
         $this->baseUrl = $baseUrl;
         $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
@@ -41,6 +51,16 @@ class HttpClient {
         return $uri;
     }
 
+    /**
+     * Create a new request.
+     *
+     * @param $method
+     * @param $uri
+     * @param $parameters
+     * @param array $headers
+     * @param array $options
+     * @return HttpRequest
+     */
     public function createRequest($method, $uri, $parameters, array $headers = [], array $options = []) {
         if (strpos($uri, '//') === false) {
             $uri = $this->baseUrl.'/'.ltrim($uri, '/');
@@ -54,6 +74,8 @@ class HttpClient {
     }
 
     /**
+     * Delete a request.
+     *
      * @param $uri
      * @param array $query
      * @param array $headers
@@ -67,6 +89,8 @@ class HttpClient {
     }
 
     /**
+     * Setup a GET request.
+     *
      * @param $uri
      * @param array $query
      * @param array $headers
@@ -79,6 +103,13 @@ class HttpClient {
         return $this->request(HttpRequest::METHOD_GET, $uri, '', $headers, $options);
     }
 
+    /**
+     * Handle an error.
+     *
+     * @param HttpResponse $response
+     * @param array $options
+     * @throws \Exception
+     */
     public function handleErrorResponse(HttpResponse $response, $options = []) {
         if ($this->val('throw', $options, $this->throwExceptions)) {
             $body = $response->getBody();
@@ -92,6 +123,8 @@ class HttpClient {
     }
 
     /**
+     * Setup a HEAD request.
+     *
      * @param $uri
      * @param array $query
      * @param array $headers
@@ -105,6 +138,8 @@ class HttpClient {
 
 
     /**
+     * Setup an OPTIONS request.
+     *
      * @param $uri
      * @param array $headers
      * @param array $options
@@ -116,6 +151,8 @@ class HttpClient {
     }
 
     /**
+     * Setup a PATCH request.
+     *
      * @param $uri
      * @param $body
      * @param array $headers
@@ -127,6 +164,8 @@ class HttpClient {
     }
 
     /**
+     * Setup a POST request.
+     *
      * @param $uri
      * @param $body
      * @param array $headers
@@ -138,6 +177,8 @@ class HttpClient {
     }
 
     /**
+     * Setup a PUT request.
+     *
      * @param $uri
      * @param $body
      * @param array $headers
@@ -149,6 +190,8 @@ class HttpClient {
     }
 
     /**
+     * Handle full request process.
+     *
      * @param string $method
      * @param string $uri
      * @param mixed $body
@@ -192,6 +235,8 @@ class HttpClient {
     }
 
     /**
+     * Set a default header.
+     *
      * @param string $name
      * @param mixed $value
      * @return HttpClient $this
@@ -211,7 +256,7 @@ class HttpClient {
     }
 
     /**
-     * Set the defaultHeaders.
+     * Set the default headers.
      *
      * @param array $defaultHeaders
      * @return HttpClient Returns `$this` for fluent calls.
@@ -221,11 +266,20 @@ class HttpClient {
         return $this;
     }
 
+    /**
+     *
+     *
+     * @param $name
+     * @param null $default
+     * @return null
+     */
     public function getDefaultOption($name, $default = null) {
         return $this->val($name, $this->defaultOptions, $default);
     }
 
     /**
+     * Set a default option.
+     *
      * @param string $name
      * @param mixed $value
      * @return HttpClient $this
@@ -236,7 +290,7 @@ class HttpClient {
     }
 
     /**
-     * Get the defaultOptions.
+     * Get the default options.
      *
      * @return array Returns the defaultOptions.
      */
@@ -275,6 +329,14 @@ class HttpClient {
         return $this;
     }
 
+    /**
+     * Get specified key from array if it exists, otherwise use the default.
+     *
+     * @param $key
+     * @param $arr
+     * @param null $default
+     * @return null
+     */
     protected function val($key, $arr, $default = null) {
         if (isset($arr[$key])) {
             return $arr[$key];

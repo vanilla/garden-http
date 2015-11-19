@@ -13,6 +13,10 @@ use Garden\Http\HttpClient;
  * Test cases for the README.
  */
 class ReadmeTest extends \PHPUnit_Framework_TestCase {
+
+    /**
+     * Basic test.
+     */
     public function testBasicExample() {
         $api = new HttpClient('http://httpbin.org');
         $api->setDefaultHeader('Content-Type', 'application/json');
@@ -37,6 +41,8 @@ class ReadmeTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Exception test.
+     *
      * @expectedException \Exception
      * @expectedExceptionCode 404
      */
@@ -52,6 +58,9 @@ class ReadmeTest extends \PHPUnit_Framework_TestCase {
         }
     }
 
+    /**
+     * Basic authentication test.
+     */
     public function testBasicAuthentication() {
         $api = new HttpClient('https://httpbin.org');
         $api->setDefaultOption('auth', ['username', 'password123']);
