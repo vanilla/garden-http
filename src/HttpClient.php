@@ -41,6 +41,10 @@ class HttpClient {
         return $uri;
     }
 
+    /**
+     * @param string $method
+     * @param string $uri
+     */
     public function createRequest($method, $uri, $parameters, array $headers = [], array $options = []) {
         if (strpos($uri, '//') === false) {
             $uri = $this->baseUrl.'/'.ltrim($uri, '/');
@@ -170,7 +174,7 @@ class HttpClient {
     /**
      * Get the baseUrl.
      *
-     * @return mixed Returns the baseUrl.
+     * @return string Returns the baseUrl.
      */
     public function getBaseUrl() {
         return $this->baseUrl;
@@ -193,7 +197,7 @@ class HttpClient {
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param string $value
      * @return HttpClient $this
      */
     public function setDefaultHeader($name, $value) {
@@ -275,6 +279,9 @@ class HttpClient {
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     protected function val($key, $arr, $default = null) {
         if (isset($arr[$key])) {
             return $arr[$key];
