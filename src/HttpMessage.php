@@ -111,7 +111,7 @@ abstract class HttpMessage {
      * - ["Header-Name: value", ...]
      * - Any combination of the above formats.
      *
-     * @return HttMessage Returns `$this` for fluent calls.
+     * @return HttpMessage Returns `$this` for fluent calls.
      */
     public function setHeaders(array $headers) {
         $this->headers = [];
