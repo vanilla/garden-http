@@ -287,9 +287,9 @@ class HttpClient {
      * @param mixed $default The default value to return if the key doesn't exist.
      * @return mixed The item from the array or `$default` if the array key doesn't exist.
      */
-    protected function val($key, $arr, $default = null) {
-        if (isset($arr[$key])) {
-            return $arr[$key];
+    protected function val($key, $array, $default = null) {
+        if (isset($array[$key])) {
+            return $array[$key];
         }
         return $default;
     }
