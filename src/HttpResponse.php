@@ -120,7 +120,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
         $pattern = '`^'.str_ireplace('x', '\d', preg_quote($class, '`')).'$`';
         $result = preg_match($pattern, $this->statusCode);
 
-        return $result;
+        return $result === 1;
     }
 
     /**
@@ -173,7 +173,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
             $reasonPhrase = $reasonPhrase ?: $matches[3];
         }
 
-        if (!$reasonPhrase && isset(static::$reasonPhrases[$code])) {
+        if (empty($reasonPhrase) && isset(static::$reasonPhrases[$code])) {
             $reasonPhrase = static::$reasonPhrases[$code];
         }
         $this->setStatusCode($code);
