@@ -56,7 +56,7 @@ class HttpRequest extends HttpMessage {
      * - verifyPeer: Whether or not to verify an SSL peer. Default true.
      * - username/password: Used to send basic HTTP authentication with the request.
      */
-    public function __construct($method = HttpRequest::METHOD_GET, $url = '', $body = '', array $headers = [], array $options = []) {
+    public function __construct($method = self::METHOD_GET, $url = '', $body = '', array $headers = [], array $options = []) {
         $this->setMethod(strtoupper($method));
         $this->setUrl($url);
         $this->setBody($body);
