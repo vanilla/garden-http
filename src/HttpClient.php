@@ -280,7 +280,12 @@ class HttpClient {
     }
 
     /**
-     * @return string|null
+     * Safely get a value out of an array.
+     *
+     * @param string|int $key The array key.
+     * @param array $array The array to get the value from.
+     * @param mixed $default The default value to return if the key doesn't exist.
+     * @return mixed The item from the array or `$default` if the array key doesn't exist.
      */
     protected function val($key, $arr, $default = null) {
         if (isset($arr[$key])) {
