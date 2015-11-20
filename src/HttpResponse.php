@@ -116,7 +116,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * Class '30x' = All 300-level responses up to 309
      *
      * @param string $class A string representation of the HTTP status code, with 'x' used as a wildcard.
-     * @return boolean Returns `true` if the response code matches the {@link $class}, `false` otherwise.
+     * @return integer Returns `true` if the response code matches the {@link $class}, `false` otherwise.
      */
     public function isResponseClass($class) {
         $pattern = '`^'.str_ireplace('x', '\d', preg_quote($class, '`')).'$`';
@@ -128,7 +128,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /**
      * Determine if the response was successful.
      *
-     * @return bool Returns `true` if the response was a successful 2xx code.
+     * @return integer Returns `true` if the response was a successful 2xx code.
      */
     public function isSuccessful() {
         return $this->isResponseClass('2xx');
@@ -168,7 +168,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /**
      * Set the status of the response.
      *
-     * @param int|string $code Either the 3-digit integer result code or an entire HTTP status line.
+     * @param integer $code Either the 3-digit integer result code or an entire HTTP status line.
      * @param string|null $reasonPhrase The reason phrase to go with the status code.
      * If no reason is given then one will be determined from the status code.
      * @return $this
@@ -211,7 +211,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /**
      * Get the reasonPhrase.
      *
-     * @return mixed Returns the reasonPhrase.
+     * @return string Returns the reasonPhrase.
      */
     public function getReasonPhrase() {
         return $this->reasonPhrase;
@@ -220,7 +220,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /**
      * Set the reasonPhrase.
      *
-     * @param mixed $reasonPhrase
+     * @param string $reasonPhrase
      * @return HttpResponse Returns `$this` for fluent calls.
      */
     public function setReasonPhrase($reasonPhrase) {
@@ -248,7 +248,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @link http://php.net/manual/en/arrayaccess.offsetget.php
      *
      * @param mixed $offset The offset to retrieve.
-     * @return mixed Can return all value types.
+     * @return string|null Can return all value types.
      */
     public function offsetGet($offset) {
         $this->getBody();

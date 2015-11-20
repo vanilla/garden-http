@@ -54,8 +54,8 @@ class HttpClient {
     /**
      * Create a new request.
      *
-     * @param $method
-     * @param $uri
+     * @param string $method
+     * @param string $uri
      * @param $parameters
      * @param array $headers
      * @param array $options
@@ -213,7 +213,7 @@ class HttpClient {
     /**
      * Get the baseUrl.
      *
-     * @return mixed Returns the baseUrl.
+     * @return string Returns the baseUrl.
      */
     public function getBaseUrl() {
         return $this->baseUrl;
@@ -238,7 +238,7 @@ class HttpClient {
      * Set a default header.
      *
      * @param string $name
-     * @param mixed $value
+     * @param string $value
      * @return HttpClient $this
      */
     public function setDefaultHeader($name, $value) {
@@ -335,7 +335,7 @@ class HttpClient {
      * @param $key
      * @param $arr
      * @param null $default
-     * @return null
+     * @return string|null
      */
     protected function val($key, $arr, $default = null) {
         if (isset($arr[$key])) {
