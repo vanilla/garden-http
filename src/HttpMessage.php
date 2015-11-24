@@ -1,28 +1,36 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2014 Vanilla Forums Inc.
+ * @copyright 2009-2015 Vanilla Forums Inc.
  * @license Proprietary
  */
 
 namespace Garden\Http;
 
 
+/**
+ * HTTP messages consist of requests from a client to a server and responses from a server to a client.
+ *
+ * This is the base class for both the {@link HttpRequest} class and the {@link HttpResponse} class.
+ */
 abstract class HttpMessage {
     /// Properties ///
 
     /**
-     * @var
+     * @var string|array The body of the message.
      */
     protected $body;
+
     /**
      * @var string The HTTP protocol version of the request.
      */
-    protected $protocolVersion = 1.1;
+    protected $protocolVersion = '1.1';
+
     /**
      * @var array An array of headers stored by lower cased header name.
      */
     private $headers = [];
+
     /**
      * @var array An array of header names as specified by the various header methods.
      */
@@ -192,18 +200,21 @@ abstract class HttpMessage {
     }
 
     /**
-     * Get the protocolVersion.
+     * Get the HTTP protocol version of the message.
      *
-     * @return string Returns the protocolVersion.
+     * @return string Returns the current HTTP protocol version.
      */
     public function getProtocolVersion() {
         return $this->protocolVersion;
     }
 
     /**
-     * Set the protocolVersion.
+     * Set the HTTP protocol version.
      *
-     * @param string $protocolVersion
+     * The default protocol version of all messages is HTTP 1.1. Some old servers may only support HTTP 1.0 so that can
+     * be overridden with this method.
+     *
+     * @param string $protocolVersion The new protocol version to set.
      * @return HttpMessage Returns `$this` for fluent calls.
      */
     public function setProtocolVersion($protocolVersion) {
@@ -212,18 +223,18 @@ abstract class HttpMessage {
     }
 
     /**
-     * Get the body.
+     * Get the body of the message.
      *
-     * @return mixed Returns the body.
+     * @return string|array Returns the body.
      */
     public function getBody() {
         return $this->body;
     }
 
     /**
-     * Set the body.
+     * Set the body of the message.
      *
-     * @param mixed $body
+     * @param string|array $body The new body of the message.
      * @return HttpMessage Returns `$this` for fluent calls.
      */
     public function setBody($body) {

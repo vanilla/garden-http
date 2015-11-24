@@ -60,11 +60,12 @@ class HttpClient {
      *
      * @param string $method The HTTP method of the request.
      * @param string $uri The URL or path of the request.
+     * @param string|array $body The body of the request.
      * @param array $headers An array of HTTP headers to add to the request.
      * @param array $options Additional options to be sent with the request.
      * @return HttpRequest Returns the new {@link HttpRequest} object.
      */
-    public function createRequest($method, $uri, $parameters, array $headers = [], array $options = []) {
+    public function createRequest($method, $uri, $body, array $headers = [], array $options = []) {
         if (strpos($uri, '//') === false) {
             $uri = $this->baseUrl.'/'.ltrim($uri, '/');
         }
@@ -72,7 +73,7 @@ class HttpClient {
         $headers = array_replace($this->defaultHeaders, $headers);
         $options = array_replace($this->defaultOptions, $options);
 
-        $request = new HttpRequest($method, $uri, $parameters, $headers, $options);
+        $request = new HttpRequest($method, $uri, $body, $headers, $options);
         return $request;
     }
 
@@ -92,7 +93,7 @@ class HttpClient {
     }
 
     /**
-     * Send a GET requet to the API.
+     * Send a GET request to the API.
      *
      * @param string $uri The URL or path of the request.
      * @param array $query The querystring to add to the URL.

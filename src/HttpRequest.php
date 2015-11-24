@@ -1,13 +1,16 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2014 Vanilla Forums Inc.
+ * @copyright 2009-2015 Vanilla Forums Inc.
  * @license MIT
  */
 
 namespace Garden\Http;
 
 
+/**
+ * Representation of an outgoing, client-side request.
+ */
 class HttpRequest extends HttpMessage {
     /// Constants ///
 
@@ -83,9 +86,9 @@ class HttpRequest extends HttpMessage {
     }
 
     /**
-     * Set the auth.
+     * Set the basic HTTP authentication for the request.
      *
-     * @param array $auth
+     * @param array $auth An array in the form `[username, password]`.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
     public function setAuth(array $auth) {
@@ -93,6 +96,11 @@ class HttpRequest extends HttpMessage {
         return $this;
     }
 
+    /**
+     * Send the request.
+     *
+     * @return HttpResponse Returns the response from the API.
+     */
     public function send() {
         $ch = $this->createCurl();
         $response = $this->execCurl($ch);
@@ -101,6 +109,12 @@ class HttpRequest extends HttpMessage {
         return $response;
     }
 
+    /**
+     * Create the cURL resource that represents this request.
+     *
+     * @return resource Returns the cURL resource.
+     * @see curl_init(), curl_setopt(), curl_exec()
+     */
     protected function createCurl() {
         $ch = curl_init();
 
@@ -180,7 +194,7 @@ class HttpRequest extends HttpMessage {
      *
      * @param resource $ch The curl handle to execute.
      * @return HttpResponse Returns an {@link RestResponse} object with the information from the request
-     * @throws Exception Throws an exception when the request returns a non 2xx response..
+     * @throws \Exception Throws an exception when the request returns a non 2xx response..
      */
     protected function execCurl($ch) {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -217,7 +231,7 @@ class HttpRequest extends HttpMessage {
     /**
      * Set the HTTP method.
      *
-     * @param string $method
+     * @param string $method The new HTTP method.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
     public function setMethod($method) {
@@ -226,18 +240,18 @@ class HttpRequest extends HttpMessage {
     }
 
     /**
-     * Get the url.
+     * Get the URL where the request will be sent.
      *
-     * @return string Returns the url.
+     * @return string Returns the URL.
      */
     public function getUrl() {
         return $this->url;
     }
 
     /**
-     * Set the url.
+     * Set the URL where the request will be sent.
      *
-     * @param string $url
+     * @param string $url The new URL.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
     public function setUrl($url) {
@@ -246,7 +260,10 @@ class HttpRequest extends HttpMessage {
     }
 
     /**
-     * Get the verifyPeer.
+     * Get whether or not to verify the SSL certificate of HTTPS calls.
+     *
+     * In production this settings should always be set to `true`, but during development or testing it's sometimes
+     * necessary to allow invalid SSL certificates.
      *
      * @return boolean Returns the verifyPeer.
      */
@@ -255,14 +272,13 @@ class HttpRequest extends HttpMessage {
     }
 
     /**
-     * Set the verifyPeer.
+     * Set whether or not to verify the SSL certificate of HTTPS calls.
      *
-     * @param boolean $verifyPeer
+     * @param bool $verifyPeer The new verify peer setting.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
     public function setVerifyPeer($verifyPeer) {
         $this->verifyPeer = $verifyPeer;
         return $this;
     }
-
 }
