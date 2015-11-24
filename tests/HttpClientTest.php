@@ -12,9 +12,14 @@ use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
 
 
+/**
+ * Contains tests against the {@link HttpClient} class.
+ */
 class HttpClientTest extends \PHPUnit_Framework_TestCase {
     /**
-     * @return HttpClient
+     * Get the API that will be used to make test calls.
+     *
+     * @return HttpClient Returns the test {@link HttpClient}.
      */
     public function getApi() {
         $api = new HttpClient();
@@ -39,7 +44,9 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param $method The HTTP method to test.
+     * Test that setting an HTTP method name sends a request of that type properly.
+     *
+     * @param string $method The HTTP method to test.
      * @dataProvider provideMethods
      * @throws \Exception Throws an exception when the returned data is a string.
      */
@@ -78,6 +85,8 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Test basic authentication when the wrong username is supplied.
+     *
      * @expectedException \Exception
      * @expectedExceptionCode 401
      * @expectedExceptionMessage Invalid username.
@@ -91,6 +100,8 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Test basic authentication when the correct username is supplied.
+     *
      * @expectedException \Exception
      * @expectedExceptionCode 401
      * @expectedExceptionMessage Invalid password.
@@ -104,6 +115,11 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
 
+    /**
+     * Provide all of the default HTTP methods.
+     *
+     * @return array Returns a data provider array of HTTP methods.
+     */
     public function provideMethods() {
         $arr = [
             HttpRequest::METHOD_GET => [HttpRequest::METHOD_GET],
