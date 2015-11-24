@@ -18,11 +18,11 @@ namespace Garden {
     $app = new Application();
 
     // Register routes.
-    $app->route('/hello.json', function () {
+    $app->route('/hello', function () {
         return [200, [], 'Hello world'];
     });
 
-    $app->route('/echo(/.+)?\.json', function () use ($app) {
+    $app->route('/echo(/.+)?', function () use ($app) {
         $request = $app->request;
 
         $result = [
@@ -39,7 +39,7 @@ namespace Garden {
         return $result;
     });
 
-    $app->route('/basic-protected/{username}/{password}\.json', function ($username = '', $password = '') use ($app) {
+    $app->route('/basic-protected/{username}/{password}', function ($username = '', $password = '') use ($app) {
         $request = $app->request;
 
         if ($request->getEnv('PHP_AUTH_USER') !== $username) {
