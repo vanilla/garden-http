@@ -217,7 +217,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /**
      * Get the HTTP reason phrase of the response.
      *
-     * @return mixed Returns the reason phrase.
+     * @return string Returns the reason phrase.
      */
     public function getReasonPhrase() {
         return $this->reasonPhrase;
