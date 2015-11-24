@@ -24,6 +24,43 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('bar', $msg->getHeader('fOO'));
     }
 
+
+    /**
+     * Test that {@link HttpRequest} can get/set basic properties.
+     */
+    public function testBasicRequestPropertyAccess() {
+        $request = new HttpRequest();
+
+        $auth = ['username', 'password'];
+        $request->setAuth($auth);
+        $this->assertSame($auth, $request->getAuth());
+
+        $body = 'foo=bar';
+        $request->setBody($body);
+        $this->assertSame($body, $request->getBody());
+
+        $body = ['foo' => 'bar'];
+        $request->setBody($body);
+        $this->assertSame($body, $request->getBody());
+
+        $request->setMethod('get');
+        $this->assertSame('GET', $request->getMethod());
+
+        $pv = '1.0';
+        $request->setProtocolVersion($pv);
+        $this->assertSame($pv, $request->getProtocolVersion());
+
+        $url = 'http://example.com';
+        $request->setUrl($url);
+        $this->assertSame($url, $request->getUrl());
+
+        $vps = [false, true];
+        foreach ($vps as $vp) {
+            $request->setVerifyPeer($vp);
+            $this->assertSame($vp, $request->getVerifyPeer());
+        }
+    }
+
     /**
      * Test that {@link HttpMessage::getHeaders()} preserves the case that was set.
      */
@@ -48,6 +85,33 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertSame('bar,baz', $msg->getHeader('Foo'));
         $this->assertSame(['bar', 'baz'], $msg->getHeaderLines('FOO'));
+    }
+
+    /**
+     * Test HTTP headers that are in the form of one giant string.
+     */
+    public function testStringBlockHeaders() {
+        $headers = [
+            "X-Cache-Control" => "no-cache",
+            "X-Content-Type" => "something/something",
+            "X-Content-Encoding" => "null"
+        ];
+
+        // Make a header string.
+        $headerString = implode_assoc("\r\n", ": ", $headers);
+
+        $msg = new HttpRequest();
+        $msg->setHeaders($headerString);
+
+        foreach ($headers as $key => $value) {
+            $this->assertSame($value, $msg->getHeader($key));
+        }
+
+        // Test a header with multiple elements.
+        $headerString2 = "X-Multi: one\r\nx-multi: two";
+        $msg2 = new HttpRequest();
+        $msg2->setHeaders($headerString2);
+        $this->assertSame(['one', 'two'], $msg2->getHeaderLines('X-Multi'));
     }
 
     /**
