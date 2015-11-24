@@ -33,6 +33,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @var array HTTP response codes and messages.
      */
     protected static $reasonPhrases = array(
+        // Could not resolve host.
+        0 => 'Could not resolve host',
         // Informational 1xx
         100 => 'Continue',
         101 => 'Switching Protocols',

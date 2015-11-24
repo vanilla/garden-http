@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2014 Vanilla Forums Inc.
+ * @copyright 2009-2015 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -9,7 +9,9 @@ namespace Garden\Http\Tests;
 
 use Garden\Http\HttpRequest;
 
-
+/**
+ * Contains tests against the {@link HttpMessage}, {@link HttpRequest}, and  {@link HttpResponse}classes.
+ */
 class HttpMessageTest extends \PHPUnit_Framework_TestCase {
 
     /**
@@ -132,6 +134,9 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('world', $msg->getHeader('foo'));
     }
 
+    /**
+     * Test removing headers by setting them to `null`.
+     */
     public function testHeaderRemove() {
         $msg = new HttpRequest();
 
@@ -140,5 +145,16 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
 
         $msg->setHeader('foo', null);
         $this->assertFalse($msg->hasHeader('foo'));
+    }
+
+    /**
+     * Test requesting to an host that doesn't resolve.
+     */
+    public function testUnresolvedUrl() {
+        $request = new HttpRequest("GET", "http://foo.foo");
+        $response = $request->send();
+
+        $this->assertSame(0, $response->getStatusCode());
+        $this->assertStringStartsWith("Could not resolve host", $response->getReasonPhrase());
     }
 }
