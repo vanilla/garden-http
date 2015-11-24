@@ -7,23 +7,24 @@ php:
     - 7.0
     - hhvm
 
-sudo: required
+sudo: false
 
 matrix:
     fast_finish: true
-    allow_failures:
-        - php: hhvm-nightly
 
 install:
     - composer install
     - travis/install-nginx.sh
-    - travis/install-nginx-setup.sh
 
 script:
-    - curl 'http://garden-http.dev/hello.json'
+    - curl -vsf 'http://garden-http.dev:8080/hello.json' &> /dev/stdout
     - phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
 
 addons:
+    apt:
+      packages:
+        - nginx
+        - realpath
     hosts:
         - garden-http.dev
 

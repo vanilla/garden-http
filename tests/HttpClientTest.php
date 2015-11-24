@@ -18,7 +18,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
      */
     public function getApi() {
         $api = new HttpClient();
-        $api->setBaseUrl('http://garden-http.dev/')
+        $api->setBaseUrl('http://garden-http.dev:8080/')
             ->setDefaultHeader('Referer', basename(str_replace('\\', '/', __CLASS__)))
             ->setDefaultHeader('Content-Type', 'application/json')
             ->setThrowExceptions(true);
