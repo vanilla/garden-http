@@ -1,18 +1,27 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2014 Vanilla Forums Inc.
+ * @copyright 2009-2015 Vanilla Forums Inc.
  * @license MIT
  */
 
 namespace Garden\Http;
 
 
+/**
+ * Represents an client connection to a RESTful API.
+ */
 class HttpClient {
     /// Properties ///
 
+    /**
+     * @var string The base URL prefix of the API.
+     */
     protected $baseUrl;
 
+    /**
+     * @var array The default headers to send with each API request.
+     */
     protected $defaultHeaders = [];
 
     protected $defaultOptions = [];
@@ -21,6 +30,11 @@ class HttpClient {
 
     /// Methods ///
 
+    /**
+     * Initialize a new instance of the {@link HttpClient} class.
+     *
+     * @param string $baseUrl The base URL prefix of the API.
+     */
     public function __construct($baseUrl = '') {
         $this->baseUrl = $baseUrl;
         $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
@@ -42,8 +56,13 @@ class HttpClient {
     }
 
     /**
-     * @param string $method
-     * @param string $uri
+     * Create a new {@link HttpRequest} object with properties filled out from the API client's settings.
+     *
+     * @param string $method The HTTP method of the request.
+     * @param string $uri The URL or path of the request.
+     * @param array $headers An array of HTTP headers to add to the request.
+     * @param array $options Additional options to be sent with the request.
+     * @return HttpRequest Returns the new {@link HttpRequest} object.
      */
     public function createRequest($method, $uri, $parameters, array $headers = [], array $options = []) {
         if (strpos($uri, '//') === false) {
@@ -58,11 +77,13 @@ class HttpClient {
     }
 
     /**
-     * @param $uri
-     * @param array $query
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send a DELETE request to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array $query The querystring to add to the URL.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function delete($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
@@ -71,11 +92,13 @@ class HttpClient {
     }
 
     /**
-     * @param $uri
-     * @param array $query
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send a GET requet to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array $query The querystring to add to the URL.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function get($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
@@ -83,6 +106,26 @@ class HttpClient {
         return $this->request(HttpRequest::METHOD_GET, $uri, '', $headers, $options);
     }
 
+    /**
+     * Handle a non 200 series response from the API.
+     *
+     * This method is here specifically for sub-classes to override. When an API call is made and a non-200 series
+     * status code is returned then this method is called with that response. This lets API client authors to extract
+     * the appropriate error message out of the response and decide whether or not to throw a PHP exception.
+     *
+     * It is recommended that you obey the caller's wishes on whether or not to throw an exception by using the
+     * following `if` statement:
+     *
+     * ```php
+     * if ($this->val('throw', $options, $this->throwExceptions)) {
+     * ...
+     * }
+     * ```
+     *
+     * @param HttpResponse $response The response sent from the API.
+     * @param array $options The options that were sent with the request.
+     * @throws \Exception Throws an exception if the settings or options say to throw an exception.
+     */
     public function handleErrorResponse(HttpResponse $response, $options = []) {
         if ($this->val('throw', $options, $this->throwExceptions)) {
             $body = $response->getBody();
@@ -96,11 +139,13 @@ class HttpClient {
     }
 
     /**
-     * @param $uri
-     * @param array $query
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send a HEAD request to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array $query The querystring to add to the URL.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function head($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
@@ -109,10 +154,13 @@ class HttpClient {
 
 
     /**
-     * @param $uri
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send an OPTIONS request to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array $query The querystring to add to the URL.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function options($uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
@@ -120,45 +168,53 @@ class HttpClient {
     }
 
     /**
-     * @param $uri
-     * @param $body
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send a PATCH request to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array|string $body The HTTP body to send to the request or an array to be appropriately encoded.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function patch($uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_PATCH, $uri, $body, $headers, $options);
     }
 
     /**
-     * @param $uri
-     * @param $body
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send a POST request to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array|string $body The HTTP body to send to the request or an array to be appropriately encoded.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function post($uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_POST, $uri, $body, $headers, $options);
     }
 
     /**
-     * @param $uri
-     * @param $body
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Send a PUT request to the API.
+     *
+     * @param string $uri The URL or path of the request.
+     * @param array|string $body The HTTP body to send to the request or an array to be appropriately encoded.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function put($uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_PUT, $uri, $body, $headers, $options);
     }
 
     /**
-     * @param string $method
-     * @param string $uri
-     * @param mixed $body
-     * @param array $headers
-     * @param array $options
-     * @return HttpResponse
+     * Make a generic HTTP request against the API.
+     *
+     * @param string $method The HTTP method of the request.
+     * @param string $uri The URL or path of the request.
+     * @param array|string $body The HTTP body to send to the request or an array to be appropriately encoded.
+     * @param array $headers The HTTP headers to add to the request.
+     * @param array $options An array of additional options for the request.
+     * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function request($method, $uri, $body, $headers = [], array $options = []) {
         $request = $this->createRequest($method, $uri, $body, $headers, $options);
@@ -172,7 +228,7 @@ class HttpClient {
     }
 
     /**
-     * Get the baseUrl.
+     * Get the base URL of the API.
      *
      * @return string Returns the baseUrl.
      */
@@ -181,9 +237,9 @@ class HttpClient {
     }
 
     /**
-     * Set the baseUrl.
+     * Set the base URL of the API.
      *
-     * @param mixed $baseUrl
+     * @param string $baseUrl The base URL of the API.
      * @return HttpClient Returns `$this` for fluent calls.
      */
     public function setBaseUrl($baseUrl) {
@@ -191,14 +247,25 @@ class HttpClient {
         return $this;
     }
 
+    /**
+     * Get the value of a default header.
+     *
+     * Default headers are sent along with all requests.
+     *
+     * @param string $name The name of the header to get.
+     * @param mixed $default The value to return if there is no default header.
+     * @return mixed Returns the value of the default header.
+     */
     public function getDefaultHeader($name, $default = null) {
         return $this->val($name, $this->defaultHeaders, $default);
     }
 
     /**
-     * @param string $name
-     * @param string $value
-     * @return HttpClient $this
+     * Set the value of a default header.
+     *
+     * @param string $name The name of the header to set.
+     * @param string $value The new value of the default header.
+     * @return HttpClient Returns `$this` for fluent calls.
      */
     public function setDefaultHeader($name, $value) {
         $this->defaultHeaders[$name] = $value;
@@ -206,18 +273,20 @@ class HttpClient {
     }
 
     /**
-     * Get the defaultHeaders.
+     * Get the all the default headers.
      *
-     * @return array Returns the defaultHeaders.
+     * The default headers are added to every request.
+     *
+     * @return array Returns the default headers.
      */
     public function getDefaultHeaders() {
         return $this->defaultHeaders;
     }
 
     /**
-     * Set the defaultHeaders.
+     * Set the default headers.
      *
-     * @param array $defaultHeaders
+     * @param array $defaultHeaders The new default headers.
      * @return HttpClient Returns `$this` for fluent calls.
      */
     public function setDefaultHeaders($defaultHeaders) {
@@ -225,14 +294,23 @@ class HttpClient {
         return $this;
     }
 
+    /**
+     * Get the value of a default option.
+     *
+     * @param string $name The name of the default option.
+     * @param mixed $default The value to return if there is no default option set.
+     * @return mixed Returns the default option or {@link $default}.
+     */
     public function getDefaultOption($name, $default = null) {
         return $this->val($name, $this->defaultOptions, $default);
     }
 
     /**
-     * @param string $name
-     * @param mixed $value
-     * @return HttpClient $this
+     * Set the value of a default option.
+     *
+     * @param string $name The name of the default option.
+     * @param mixed $value The new value of the default option.
+     * @return HttpClient Returns `$this` for fluent calls.
      */
     public function setDefaultOption($name, $value) {
         $this->defaultOptions[$name] = $value;
@@ -240,9 +318,9 @@ class HttpClient {
     }
 
     /**
-     * Get the defaultOptions.
+     * Get all of the default options.
      *
-     * @return array Returns the defaultOptions.
+     * @return array Returns an array of default options.
      */
     public function getDefaultOptions() {
         return $this->defaultOptions;
@@ -269,9 +347,9 @@ class HttpClient {
     }
 
     /**
-     * Set the defaultOptions.
+     * Set the default options.
      *
-     * @param array $defaultOptions
+     * @param array $defaultOptions The new default options array.
      * @return HttpClient Returns `$this` for fluent calls.
      */
     public function setDefaultOptions($defaultOptions) {
