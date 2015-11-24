@@ -1,20 +1,32 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2014 Vanilla Forums Inc.
+ * @copyright 2009-2015 Vanilla Forums Inc.
  * @license MIT
  */
 
 namespace Garden\Http;
 
 
+/**
+ * Representation of an outgoing, server-side response.
+ */
 class HttpResponse extends HttpMessage implements \ArrayAccess {
     /// Properties ///
 
+    /**
+     * @var int
+     */
     protected $statusCode;
 
+    /**
+     * @var string
+     */
     protected $reasonPhrase;
 
+    /**
+     * @var string
+     */
     protected $rawBody;
 
     /**
@@ -120,7 +132,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
         $pattern = '`^'.str_ireplace('x', '\d', preg_quote($class, '`')).'$`';
         $result = preg_match($pattern, $this->statusCode);
 
-        return $result;
+        return $result === 1;
     }
 
     /**
@@ -134,19 +146,15 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
 
     /**
      * Get the raw body of the response.
-
-     * @param string|null Set a new raw response body.
+     *
      * @return string The raw body of the response.
      */
-    public function getRawBody($value = null) {
-        if ($value !== null) {
-            $this->rawBody = $value;
-        }
+    public function getRawBody() {
         return $this->rawBody;
     }
 
     /**
-     * Convert this object to the string.
+     * Convert this object to a string.
      *
      * @return string Returns the raw body of the response.
      */
@@ -154,6 +162,11 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
         return $this->rawBody;
     }
 
+    /**
+     * Get the HTTP response status line.
+     *
+     * @return string Returns the status code and reason phrase separated by a space.
+     */
     public function getStatus() {
         return trim("{$this->statusCode} {$this->reasonPhrase}");
     }
@@ -173,7 +186,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
             $reasonPhrase = $reasonPhrase ?: $matches[3];
         }
 
-        if (!$reasonPhrase && isset(static::$reasonPhrases[$code])) {
+        if (empty($reasonPhrase) && isset(static::$reasonPhrases[$code])) {
             $reasonPhrase = static::$reasonPhrases[$code];
         }
         $this->setStatusCode($code);
@@ -191,9 +204,9 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
-     * Set the code.
+     * Set the HTTP status code of the response.
      *
-     * @param int $statusCode
+     * @param int $statusCode The new status code of the response.
      * @return HttpResponse Returns `$this` for fluent calls.
      */
     public function setStatusCode($statusCode) {
@@ -202,18 +215,18 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
-     * Get the reasonPhrase.
+     * Get the HTTP reason phrase of the response.
      *
-     * @return mixed Returns the reasonPhrase.
+     * @return string Returns the reason phrase.
      */
     public function getReasonPhrase() {
         return $this->reasonPhrase;
     }
 
     /**
-     * Set the reasonPhrase.
+     * Set the reason phrase of the status.
      *
-     * @param mixed $reasonPhrase
+     * @param string $reasonPhrase The new reason phrase.
      * @return HttpResponse Returns `$this` for fluent calls.
      */
     public function setReasonPhrase($reasonPhrase) {
@@ -222,16 +235,16 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Whether a offset exists
-     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
+     * Whether an offset exists.
+     *
+     * The is one of the methods of {@link \ArrayAccess} used to access this object as an array.
+     * When using this object as an array the response body is referenced.
+     *
+     * @param mixed $offset An offset to check for.
      * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
+     *
      * The return value will be casted to boolean if non-boolean was returned.
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      */
     public function offsetExists($offset) {
         $body = $this->getBody();
@@ -239,13 +252,14 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to retrieve
-     * @link http://php.net/manual/en/arrayaccess.offsetget.php
-     * @param mixed $offset <p>
-     * The offset to retrieve.
-     * </p>
+     * Retrieve a value at a given array offset.
+     *
+     * The is one of the methods of {@link \ArrayAccess} used to access this object as an array.
+     * When using this object as an array the response body is referenced.
+     *
+     * @param mixed $offset The offset to retrieve.
      * @return mixed Can return all value types.
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
      */
     public function offsetGet($offset) {
         $this->getBody();
@@ -253,16 +267,14 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to set
+     * Set a value at a given array offset.
+     *
+     * The is one of the methods of {@link \ArrayAccess} used to access this object as an array.
+     * When using this object as an array the response body is referenced.
+     *
+     * @param mixed $offset The offset to assign the value to.
+     * @param mixed $value The value to set.
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
-     * @param mixed $offset <p>
-     * The offset to assign the value to.
-     * </p>
-     * @param mixed $value <p>
-     * The value to set.
-     * </p>
-     * @return void
      */
     public function offsetSet($offset, $value) {
         $this->getBody();
@@ -275,13 +287,13 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Offset to unset
+     * Unset an array offset.
+     *
+     * The is one of the methods of {@link \ArrayAccess} used to access this object as an array.
+     * When using this object as an array the response body is referenced.
+     *
+     * @param mixed $offset The offset to unset.
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param mixed $offset <p>
-     * The offset to unset.
-     * </p>
-     * @return void
      */
     public function offsetUnset($offset) {
         $this->getBody();
