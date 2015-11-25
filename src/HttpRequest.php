@@ -40,6 +40,11 @@ class HttpRequest extends HttpMessage {
     protected $auth;
 
     /**
+     * @var int
+     */
+    protected $timeout;
+
+    /**
      * @var bool
      */
     protected $verifyPeer;
@@ -68,6 +73,7 @@ class HttpRequest extends HttpMessage {
         $options += [
             'protocolVersion' => '1.1',
             'auth' => [],
+            'timeout' => 0,
             'verifyPeer' => true
         ];
 
@@ -156,6 +162,7 @@ class HttpRequest extends HttpMessage {
         curl_setopt($ch, CURLOPT_URL, $this->url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->getTimeout());
         curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, true);
@@ -279,6 +286,26 @@ class HttpRequest extends HttpMessage {
      */
     public function setVerifyPeer($verifyPeer) {
         $this->verifyPeer = $verifyPeer;
+        return $this;
+    }
+
+    /**
+     * Get the request timeout.
+     *
+     * @return int Returns the timeout in seconds.
+     */
+    public function getTimeout() {
+        return $this->timeout;
+    }
+
+    /**
+     * Set the request timeout.
+     *
+     * @param int $timeout The new request timeout in seconds.
+     * @return HttpRequest Returns `$this` for fluent calls.
+     */
+    public function setTimeout($timeout) {
+        $this->timeout = $timeout;
         return $this;
     }
 }
