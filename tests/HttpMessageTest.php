@@ -8,6 +8,7 @@
 namespace Garden\Http\Tests;
 
 use Garden\Http\HttpRequest;
+use Garden\Http\HttpResponse;
 
 /**
  * Contains tests against the {@link HttpMessage}, {@link HttpRequest}, and  {@link HttpResponse}classes.
@@ -61,6 +62,38 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
             $request->setVerifyPeer($vp);
             $this->assertSame($vp, $request->getVerifyPeer());
         }
+    }
+
+    /**
+     * Test that {@link HttpResponse} can get/set basic properties.
+     */
+    public function testBasicResponsePropertyAccess() {
+        $response = new HttpResponse();
+
+        $rawBody = '{}';
+        $response->setRawBody($rawBody);
+        $this->assertSame($rawBody, $response->getRawBody());
+        $this->assertSame($response->getRawBody(), (string)$response);
+
+        $body = 'foo=bar';
+        $response->setBody($body);
+        $this->assertSame($body, $response->getBody());
+
+        $body = ['foo' => 'bar'];
+        $response->setBody($body);
+        $this->assertSame($body, $response->getBody());
+
+        $pv = '1.0';
+        $response->setProtocolVersion($pv);
+        $this->assertSame($pv, $response->getProtocolVersion());
+
+        $reason = 'Because';
+        $response->setReasonPhrase($reason);
+        $this->assertSame($reason, $response->getReasonPhrase());
+
+        $code = '222';
+        $response->setStatusCode($code);
+        $this->assertSame($code, $response->getStatusCode());
     }
 
     /**
@@ -148,10 +181,119 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Test the {@link HttpResponse} body and raw body access.
+     */
+    public function testResponseBodyAccess() {
+        $r = new HttpResponse();
+        $r->setHeader('Content-Type', 'application/json');
+
+        // Test setting through the raw body.
+        $emptyJson = '{}';
+        $r->setRawBody($emptyJson);
+        $this->assertSame($emptyJson, $r->getRawBody());
+        $this->assertSame([], $r->getBody());
+
+        $arrayJson = '{ "foo": "bar" }';
+        $r->setRawBody($arrayJson);
+        $this->assertSame(json_decode($arrayJson, true), $r->getBody());
+
+        // Test setting throw the body.
+        $empty = [];
+        $r->setBody($empty);
+        $this->assertSame('[]', $r->getRawBody());
+
+        $arr = ['foo' => 'baz'];
+        $r->setBody($arr);
+        $this->assertJsonStringEqualsJsonString('{"foo":"baz"}', $r->getRawBody());
+
+        foreach ([true, false, 0, 1, 1.25] as $value) {
+            $r->setBody($value);
+            $this->assertJsonStringEqualsJsonString(json_encode($value), $r->getRawBody());
+        }
+
+        // Test a type that can't be decoded.
+        $obj = new \stdClass();
+        $obj->foo = 'baz';
+        $r->setBody($obj);
+        $this->assertSame($obj, $r->getBody());
+        $this->assertEmpty($r->getRawBody());
+    }
+
+    /**
+     * Test the {@link HttpResponse} status code classes.
+     */
+    public function testResponseClasses() {
+        $r = new HttpResponse();
+        $r->setStatusCode('222');
+
+        $this->assertTrue($r->isSuccessful());
+
+        $this->assertTrue($r->isResponseClass('222'));
+        $this->assertTrue($r->isResponseClass('2xx'));
+        $this->assertTrue($r->isResponseClass('22x'));
+        $this->assertTrue($r->isResponseClass('2x2'));
+    }
+
+    /**
+     * Test the various response status methods.
+     */
+    public function testResponseStatuses() {
+        // Test setting the status as a code.
+        $r = new HttpResponse();
+        $this->assertSame(200, $r->getStatusCode());
+        $r->setStatus(404);
+        $this->assertSame(404, $r->getStatusCode());
+        $this->assertSame('Not Found', $r->getReasonPhrase());
+        $this->assertSame("404 Not Found", $r->getStatus());
+
+        // Test setting the status with a custom reason phrase.
+        $r2 = new HttpResponse();
+        $r2->setStatus(401, 'Locked Out');
+        $this->assertSame('401 Locked Out', $r2->getStatus());
+
+        // Test setting the status from a full HTTP status line.
+        $r3 = new HttpResponse();
+        $r3->setStatus('HTTP/1.2 423 Running Cool');
+        $this->assertSame(423, $r3->getStatusCode());
+        $this->assertSame('Running Cool', $r3->getReasonPhrase());
+        $this->assertSame('1.2', $r3->getProtocolVersion());
+
+        // Test setting the status from a partial HTTP status line.
+        $r4 = new HttpResponse();
+        $r4->setStatus('599 Red Alert');
+        $this->assertSame(599, $r4->getStatusCode());
+        $this->assertSame('Red Alert', $r4->getReasonPhrase());
+    }
+
+    /**
+     * Test accessing an {@link HttpResponse} as an array.
+     */
+    public function testResponseArrayAccess() {
+        $r = new HttpResponse();
+        $r->setBody(['foo' => 'bar']);
+
+        $this->assertTrue(isset($r['foo']));
+        $this->assertSame('bar', $r['foo']);
+        $this->assertFalse(isset($r['baz']));
+        $this->assertNull($r['not']);
+
+        $r['baz'] = 'ploop';
+        $this->assertSame('ploop', $r['baz']);
+
+        unset($r['foo'], $r['baz']);
+        $this->assertEmpty($r->getBody());
+
+        $r[] = 'one';
+        $r[] = 'two';
+        $this->assertSame(['one', 'two'], $r->getBody());
+    }
+
+    /**
      * Test requesting to an host that doesn't resolve.
      */
     public function testUnresolvedUrl() {
         $request = new HttpRequest("GET", "http://foo.foo");
+        $request->setTimeout(1);
         $response = $request->send();
 
         $this->assertSame(0, $response->getStatusCode());
