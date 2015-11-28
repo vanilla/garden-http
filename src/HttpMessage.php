@@ -155,9 +155,9 @@ abstract class HttpMessage {
         }
 
         // Strip the status line.
-        $firstLine = array_shift($headers);
-        if (strpos($firstLine, 'HTTP/') !== 0) {
-            array_unshift($headers, $firstLine);
+        $firstLine = array_values($headers)[0];
+        if (strpos($firstLine, 'HTTP/') === 0) {
+            array_shift($headers);
         }
 
         $result = [];
