@@ -130,7 +130,7 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
         $throw = !$api->getThrowExceptions();
         $this->assertNotSame($throw, $api->getThrowExceptions());
-        $api->setThrowExceptions($thow);
+        $api->setThrowExceptions($throw);
         $this->assertSame($throw, $api->getThrowExceptions());
     }
 
