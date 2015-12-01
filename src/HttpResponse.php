@@ -33,6 +33,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @var array HTTP response codes and messages.
      */
     protected static $reasonPhrases = array(
+        // Could not resolve host.
+        0 => 'Could not resolve host',
         // Informational 1xx
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -93,7 +95,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param mixed $headers An array of response headers.
      * @param string $rawBody The raw body of the response.
      */
-    public function __construct($status = 0, $headers = '', $rawBody = '') {
+    public function __construct($status = 200, $headers = '', $rawBody = '') {
         $this->setStatus($status);
         $this->setHeaders($headers);
         $this->rawBody = $rawBody;
@@ -115,6 +117,28 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
             }
         }
         return $this->body;
+    }
+
+    /**
+     * Set the body of the response.
+     *
+     * This method will try and keep the raw body in sync with the value set here.
+     *
+     * @param array|string $body The new body.
+     * @return $this
+     */
+    public function setBody($body) {
+        if (is_string($body) || is_null($body)) {
+            $this->rawBody = $this->body = $body;
+        } elseif (is_array($body) || is_bool($body) || is_numeric($body) || $body instanceof \JsonSerializable) {
+            $this->rawBody = json_encode($body, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            $this->body = $body;
+        } else {
+            $this->rawBody = '';
+            $this->body = $body;
+        }
+
+        return $this;
     }
 
     /**
@@ -154,6 +178,17 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
+     * Set the raw body of the response.
+     *
+     * @param string $body The new raw body.
+     */
+    public function setRawBody($body) {
+        $this->rawBody = $body;
+        $this->body = null;
+        return $this;
+    }
+
+    /**
      * Convert this object to a string.
      *
      * @return string Returns the raw body of the response.
@@ -182,7 +217,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     public function setStatus($code, $reasonPhrase = null) {
         if (preg_match('`(?:HTTP/([\d.]+)\s+)?(\d{3})\s*(.*)`i', $code, $matches)) {
             $this->protocolVersion = $matches[1] ?: $this->protocolVersion;
-            $code = $matches[2];
+            $code = (int)$matches[2];
             $reasonPhrase = $reasonPhrase ?: $matches[3];
         }
 
@@ -263,7 +298,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      */
     public function offsetGet($offset) {
         $this->getBody();
-        return isset($this->body[$offset]) ? $this->body[$offset] : null;
+        $result = isset($this->body[$offset]) ? $this->body[$offset] : null;
+        return $result;
     }
 
     /**

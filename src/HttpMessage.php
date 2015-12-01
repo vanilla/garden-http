@@ -112,23 +112,31 @@ abstract class HttpMessage {
     /**
      * Set all of the headers. This will overwrite any existing headers.
      *
-     * @param array $headers An array of headers to set. This array can be in the following form.
+     * @param array|string $headers An array or string of headers to set.
+     *
+     * The array of headers can be in the following form:
      *
      * - ["Header-Name" => "value", ...]
      * - ["Header-Name" => ["lines, ...], ...]
      * - ["Header-Name: value", ...]
      * - Any combination of the above formats.
      *
+     * A header string is the the form of the HTTP standard where each Key: Value pair is separated by `\r\n`.
+     *
      * @return HttpMessage Returns `$this` for fluent calls.
      */
-    public function setHeaders(array $headers) {
+    public function setHeaders($headers) {
         $this->headers = [];
         $this->headerNames = [];
 
         $headers = $this->parseHeaders($headers);
         foreach ($headers as $name => $lines) {
             $key = strtolower($name);
-            $this->headers[$key] = $lines;
+            if (isset($this->headers[$key])) {
+                $this->headers[$key] = array_merge($this->headers[$key], $lines);
+            } else {
+                $this->headers[$key] = $lines;
+            }
             $this->headerNames[$key] = $name;
         }
 

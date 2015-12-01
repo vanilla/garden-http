@@ -12,9 +12,14 @@ use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
 
 
+/**
+ * Contains tests against the {@link HttpClient} class.
+ */
 class HttpClientTest extends \PHPUnit_Framework_TestCase {
     /**
-     * @return HttpClient
+     * Get the API that will be used to make test calls.
+     *
+     * @return HttpClient Returns the test {@link HttpClient}.
      */
     public function getApi() {
         $api = new HttpClient();
@@ -39,7 +44,9 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @param $method The HTTP method to test.
+     * Test that setting an HTTP method name sends a request of that type properly.
+     *
+     * @param string $method The HTTP method to test.
      * @dataProvider provideMethods
      * @throws \Exception Throws an exception when the returned data is a string.
      */
@@ -78,6 +85,8 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Test basic authentication when the wrong username is supplied.
+     *
      * @expectedException \Exception
      * @expectedExceptionCode 401
      * @expectedExceptionMessage Invalid username.
@@ -91,6 +100,43 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Test that the basic getters and setters work.
+     */
+    public function testBasicPropertyAccess() {
+        $api = $this->getApi();
+
+        $baseUrl = 'https://localhost';
+        $this->assertNotSame($baseUrl, $api->getBaseUrl());
+        $api->setBaseUrl($baseUrl);
+        $this->assertSame($baseUrl, $api->getBaseUrl());
+
+        $this->assertNotSame('B', $api->getDefaultHeader('A'));
+        $api->setDefaultHeader('A', 'B');
+        $this->assertSame('B', $api->getDefaultHeader('A'));
+
+        $headers = ['Foo' => 'bar', 'Boo' => 'baz', 'a' => 'c'];
+        $this->assertNotSame($headers, $api->getDefaultHeaders());
+        $api->setDefaultHeaders($headers);
+        $this->assertSame($headers, $api->getDefaultHeaders());
+
+        $this->assertNotSame('B', $api->getDefaultOption('A'));
+        $api->setDefaultOption('A', 'B');
+        $this->assertSame('B', $api->getDefaultOption('A'));
+
+        $options = ['Foo' => 'bar', 'Boo' => 'baz', 'a' => 'c'];
+        $this->assertNotSame($options, $api->getDefaultOptions());
+        $api->setDefaultOptions($options);
+        $this->assertSame($options, $api->getDefaultOptions());
+
+        $throw = !$api->getThrowExceptions();
+        $this->assertNotSame($throw, $api->getThrowExceptions());
+        $api->setThrowExceptions($throw);
+        $this->assertSame($throw, $api->getThrowExceptions());
+    }
+
+    /**
+     * Test basic authentication when the correct username is supplied.
+     *
      * @expectedException \Exception
      * @expectedExceptionCode 401
      * @expectedExceptionMessage Invalid password.
@@ -103,7 +149,23 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
         $data = $response->getBody();
     }
 
+    /**
+     * Test an API call that returns an error response rather than throw an exception.
+     */
+    public function testErrorResponse() {
+        $api = $this->getApi()->setThrowExceptions(false);
+        $api->setDefaultOption('auth', ['foo', 'bar']);
 
+        $response = $api->get('/basic-protected/fooz/bar.json');
+        $this->assertSame(401, $response->getStatusCode());
+    }
+
+
+    /**
+     * Provide all of the default HTTP methods.
+     *
+     * @return array Returns a data provider array of HTTP methods.
+     */
     public function provideMethods() {
         $arr = [
             HttpRequest::METHOD_GET => [HttpRequest::METHOD_GET],
