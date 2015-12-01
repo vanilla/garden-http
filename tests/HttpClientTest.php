@@ -100,6 +100,41 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
     }
 
     /**
+     * Test that the basic getters and setters work.
+     */
+    public function testBasicPropertyAccess() {
+        $api = $this->getApi();
+
+        $baseUrl = 'https://localhost';
+        $this->assertNotSame($baseUrl, $api->getBaseUrl());
+        $api->setBaseUrl($baseUrl);
+        $this->assertSame($baseUrl, $api->getBaseUrl());
+
+        $this->assertNotSame('B', $api->getDefaultHeader('A'));
+        $api->setDefaultHeader('A', 'B');
+        $this->assertSame('B', $api->getDefaultHeader('A'));
+
+        $headers = ['Foo' => 'bar', 'Boo' => 'baz', 'a' => 'c'];
+        $this->assertNotSame($headers, $api->getDefaultHeaders());
+        $api->setDefaultHeaders($headers);
+        $this->assertSame($headers, $api->getDefaultHeaders());
+
+        $this->assertNotSame('B', $api->getDefaultOption('A'));
+        $api->setDefaultOption('A', 'B');
+        $this->assertSame('B', $api->getDefaultOption('A'));
+
+        $options = ['Foo' => 'bar', 'Boo' => 'baz', 'a' => 'c'];
+        $this->assertNotSame($options, $api->getDefaultOptions());
+        $api->setDefaultOptions($options);
+        $this->assertSame($options, $api->getDefaultOptions());
+
+        $throw = !$api->getThrowExceptions();
+        $this->assertNotSame($throw, $api->getThrowExceptions());
+        $api->setThrowExceptions($thow);
+        $this->assertSame($throw, $api->getThrowExceptions());
+    }
+
+    /**
      * Test basic authentication when the correct username is supplied.
      *
      * @expectedException \Exception
@@ -112,6 +147,17 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
         $response = $api->get('/basic-protected/foo/baz.json');
         $data = $response->getBody();
+    }
+
+    /**
+     * Test an API call that returns an error response rather than throw an exception.
+     */
+    public function testErrorResponse() {
+        $api = $this->getApi()->setThrowExceptions(false);
+        $api->setDefaultOption('auth', ['foo', 'bar']);
+
+        $response = $api->get('/basic-protected/fooz/bar.json');
+        $this->assertSame(401, $response->getStatusCode());
     }
 
 
