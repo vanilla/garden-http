@@ -91,13 +91,17 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /**
      * Initialize an instance of the {@link HttpResponse} object.
      *
-     * @param int $status The http response status.
-     * @param mixed $headers An array of response headers.
+     * @param int|null $status The http response status or null to get the status from the headers.
+     * @param array|string $headers An array of response headers or a header string.
      * @param string $rawBody The raw body of the response.
      */
     public function __construct($status = 200, $headers = '', $rawBody = '') {
-        $this->setStatus($status);
         $this->setHeaders($headers);
+        if (isset($status)) {
+            $this->setStatus($status);
+        } elseif (is_null($this->getStatusCode())) {
+            $this->setStatus(200);
+        }
         $this->rawBody = $rawBody;
     }
 
@@ -136,6 +140,32 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
         } else {
             $this->rawBody = '';
             $this->body = $body;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Set all of the headers. This will overwrite any existing headers.
+     *
+     * @param array|string $headers An array or string of headers to set.
+     *
+     * The array of headers can be in the following form:
+     *
+     * - ["Header-Name" => "value", ...]
+     * - ["Header-Name" => ["lines, ...], ...]
+     * - ["Header-Name: value", ...]
+     * - Any combination of the above formats.
+     *
+     * A header string is the the form of the HTTP standard where each Key: Value pair is separated by `\r\n`.
+     *
+     * @return HttpResponse Returns `$this` for fluent calls.
+     */
+    public function setHeaders($headers) {
+        parent::setHeaders($headers);
+
+        if ($statusLine = $this->parseStatusLine($headers)) {
+            $this->setStatus($statusLine);
         }
 
         return $this;
@@ -267,6 +297,30 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     public function setReasonPhrase($reasonPhrase) {
         $this->reasonPhrase = $reasonPhrase;
         return $this;
+    }
+
+    /**
+     * Parse the status line from a header string or array.
+     *
+     * @param string|array $headers Either a header string or a header array.
+     * @return string Returns the status line or an empty string if the first line is not an HTTP status.
+     */
+    private function parseStatusLine($headers) {
+        if (empty($headers)) {
+            return '';
+        }
+
+        if (is_string($headers)) {
+            $firstLine = trim(strstr($headers, "\r\n", true));
+        } else {
+            $firstLine = (string)reset($headers);
+        }
+
+        // Test the status line.
+        if (strpos($firstLine, 'HTTP/') === 0) {
+            return $firstLine;
+        }
+        return '';
     }
 
     /**

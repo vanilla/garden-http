@@ -153,11 +153,15 @@ abstract class HttpMessage {
         if (is_string($headers)) {
             $headers = explode("\r\n", $headers);
         }
+        
+        if (empty($headers)) {
+            return [];
+        }
 
         // Strip the status line.
-        $firstLine = array_shift($headers);
-        if (strpos($firstLine, 'HTTP/') !== 0) {
-            array_unshift($headers, $firstLine);
+        $firstLine = reset($headers);
+        if (strpos($firstLine, 'HTTP/') === 0) {
+            array_shift($headers);
         }
 
         $result = [];
