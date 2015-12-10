@@ -154,12 +154,12 @@ abstract class HttpMessage {
             $headers = explode("\r\n", $headers);
         }
         
-        if (!count($headers)) {
+        if (empty($headers)) {
             return [];
         }
 
         // Strip the status line.
-        $firstLine = array_values($headers)[0];
+        $firstLine = reset($headers);
         if (strpos($firstLine, 'HTTP/') === 0) {
             array_shift($headers);
         }
