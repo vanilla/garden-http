@@ -310,4 +310,47 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame('1', $msg->getHeader('foo'));
         $this->assertSame('2', $msg->getHeader('bar'));
     }
+
+    /**
+     * Test setting headers with a status line.
+     */
+    public function testParseHeadersWithStatus() {
+        $msg = new HttpResponse();
+        $msg->setHeaders("HTTP/1.1 201 Bamboozled\r\nFoo: bar\r\nX-Lookup-Mode: normal");
+
+        $this->assertSame('bar', $msg->getHeader('Foo'));
+        $this->assertSame('normal', $msg->getHeader('X-Lookup-Mode'));
+        $this->assertSame(201, $msg->getStatusCode());
+        $this->assertSame('Bamboozled', $msg->getReasonPhrase());
+    }
+
+    /**
+     * Test header overrides when constructing an {@link HttpResponse}.
+     */
+    public function testHeaderOverrides() {
+        $headerStr = "HTTP/1.1 201 Bamboozled\r\nFoo: bar\r\nX-Lookup-Mode: normal";
+
+        // An explicit status should override the one in the header.
+        $msg = new HttpResponse(404, $headerStr);
+        $this->assertSame(404, $msg->getStatusCode());
+        $this->assertSame('Not Found', $msg->getReasonPhrase());
+
+        // A null status should fetch from the header.
+        $msg2 = new HttpResponse(null, $headerStr);
+        $this->assertSame(201, $msg2->getStatusCode());
+        $this->assertSame('Bamboozled', $msg2->getReasonPhrase());
+
+    }
+
+    /**
+     * Test various scenarios where parseStatusLine is called.
+     */
+    public function testParseStatusLine() {
+        // Test parsing the status on an array without a status line.
+        $msg1 = new HttpResponse(333, ['Foo' => 'Bar']);
+        $this->assertSame(333, $msg1->getStatusCode());
+
+        $msg2 = new HttpResponse(null, ['Baz' => 'Bump']);
+        $this->assertSame(200, $msg2->getStatusCode());
+    }
 }

@@ -213,8 +213,8 @@ class HttpRequest extends HttpMessage {
         $code = $info["http_code"];
         if ($response) {
             $header_size = $info["header_size"];
-            $rawHeaders = explode("\r\n", substr($response, 0, $header_size));
-            $status = array_shift($rawHeaders);
+            $rawHeaders = substr($response, 0, $header_size);
+            $status = null;
             $rawBody = substr($response, $header_size);
         } else {
             $status = $code;
