@@ -159,7 +159,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * A header string is the the form of the HTTP standard where each Key: Value pair is separated by `\r\n`.
      *
-     * @return HttpMessage Returns `$this` for fluent calls.
+     * @return HttpResponse Returns `$this` for fluent calls.
      */
     public function setHeaders($headers) {
         parent::setHeaders($headers);
