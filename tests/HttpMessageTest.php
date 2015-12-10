@@ -299,4 +299,15 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $this->assertSame(0, $response->getStatusCode());
         $this->assertStringStartsWith("Could not resolve host", $response->getReasonPhrase());
     }
+
+    /**
+     * Test the preservation of string keys in parseHeaders().
+     */
+    public function testHeaderKeyParsing() {
+        $msg = new HttpRequest();
+        $msg->setHeaders(['foo' => '1', 'bar' => '2']);
+
+        $this->assertSame('1', $msg->getHeader('foo'));
+        $this->assertSame('2', $msg->getHeader('bar'));
+    }
 }
