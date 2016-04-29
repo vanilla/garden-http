@@ -3,6 +3,7 @@ Garden HTTP
 
 [![Build Status](https://img.shields.io/travis/vanilla/garden-http.svg?style=flat-square)](https://travis-ci.org/vanilla/garden-http)
 [![Coverage](http://img.shields.io/scrutinizer/coverage/g/vanilla/garden-http.svg?style=flat-square)](https://scrutinizer-ci.com/g/vanilla/garden-http/)
+[![Packagist Version](https://img.shields.io/packagist/v/vanilla/garden-http.svg?style=flat-square)](https://packagist.org/packages/vanilla/garden-http)
 
 Garden HTTP is an unbloated HTTP client library for building RESTful API clients. It's meant to allow you to access
 people's APIs without having to copy/paste a bunch of cURL setup and without having to double the size of your codebase.
@@ -15,12 +16,6 @@ Installation
 *Garden HTTP requires PHP 5.4 or higher and libcurl*
 
 Garden HTTP is [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) compliant and can be installed using [composer](//getcomposer.org). Just add `vanilla/garden-http` to your composer.json.
-
-```json
-"require": {
-    "vanilla/garden-http": "~1.0"
-}
-```
 
 Basic Example
 -------------
