@@ -62,7 +62,8 @@ class HttpRequest extends HttpMessage {
      *
      * - protocolVersion: The HTTP protocol version.
      * - verifyPeer: Whether or not to verify an SSL peer. Default true.
-     * - username/password: Used to send basic HTTP authentication with the request.
+     * - auth: A username/password used to send basic HTTP authentication with the request.
+     * - timeout: The number of seconds to wait before the request times out. A value of zero means no timeout.
      */
     public function __construct($method = self::METHOD_GET, $url = '', $body = '', array $headers = [], array $options = []) {
         $this->setMethod(strtoupper($method));

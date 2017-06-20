@@ -311,7 +311,11 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
         }
 
         if (is_string($headers)) {
-            $firstLine = trim(strstr($headers, "\r\n", true));
+            if (preg_match_all('`(?:^|\n)(HTTP/[^\r]+)\r\n`', $headers, $matches)) {
+                $firstLine = end($matches[1]);
+            } else {
+                $firstLine = trim(strstr($headers, "\r\n", true));
+            }
         } else {
             $firstLine = (string)reset($headers);
         }

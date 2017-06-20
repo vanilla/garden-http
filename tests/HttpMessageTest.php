@@ -353,4 +353,38 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $msg2 = new HttpResponse(null, ['Baz' => 'Bump']);
         $this->assertSame(200, $msg2->getStatusCode());
     }
+
+    /**
+     * Responses that follow redirects will have multiple header blocks.
+     */
+    public function testRedirectFollowHeaders() {
+        $headers = <<<EOT
+HTTP/1.1 301 Moved Permanently\r
+Content-Type: text/html\r
+Date: Tue, 20 Jun 2017 21:10:19 GMT\r
+Location: https://example.com\r
+Connection: Keep-Alive\r
+Content-Length: 0\r
+\r
+HTTP/1.1 201 CREATED\r
+Server: nginx/1.10.1\r
+Date: Tue, 20 Jun 2017 21:10:20 GMT\r
+Content-Type: application/json; charset=utf-8\r
+Transfer-Encoding: chunked\r
+Connection: keep-alive\r
+P3P: CP="CAO PSA OUR"\r
+Cache-Control: no-cache\r
+Expires: Tue, 20 Jun 2017 21:10:19 GMT\r
+Pragma: no-cache\r
+X-Frame-Options: SAMEORIGIN\r
+X-Content-Type-Options: nosniff\r
+Strict-Transport-Security: max-age=63072000; includeSubdomains; preload\r
+Content-Encoding: gzip\r
+EOT;
+
+        $response = new HttpResponse(null, $headers, '{"foo": "bar"}');
+
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertFalse($response->hasHeader('Location'));
+    }
 }
