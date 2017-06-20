@@ -14,11 +14,12 @@ matrix:
 
 install:
     - composer install
+    - composer require phpunit/phpunit ~5
     - travis/install-nginx.sh
 
 script:
     - curl -vsf 'http://garden-http.dev:8080/hello.json' &> /dev/stdout
-    - phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
+    - ./vendor/bin/phpunit -c tests/phpunit.xml.dist --coverage-clover=coverage.clover
 
 addons:
     apt:
