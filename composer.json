@@ -21,6 +21,11 @@
 	"config": {
 		"platform": {
 			"php": "7.0.26"
+		},
+		"fxp-asset": {
+			"vcs-driver-options": {
+				"github-no-api": true
+			}
 		}
 	},
 	"require-dev": {
