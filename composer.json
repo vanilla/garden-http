@@ -15,8 +15,13 @@
 		}
 	],
 	"require": {
-		"php": ">=5.4.0",
+		"php": ">=7.0.0",
 		"lib-curl": "*"
+	},
+	"config": {
+		"platform": {
+			"php": "7.0.26"
+		}
 	},
 	"require-dev": {
 		"vanilla/garden": "dev-master"
