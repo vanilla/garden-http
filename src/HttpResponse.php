@@ -254,7 +254,9 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
         if (empty($reasonPhrase) && isset(static::$reasonPhrases[$code])) {
             $reasonPhrase = static::$reasonPhrases[$code];
         }
-        $this->setStatusCode($code);
+        if (is_numeric($code)) {
+            $this->setStatusCode((int)$code);
+        }
         $this->setReasonPhrase((string)$reasonPhrase);
         return $this;
     }
