@@ -387,4 +387,14 @@ EOT;
         $this->assertSame(201, $response->getStatusCode());
         $this->assertFalse($response->hasHeader('Location'));
     }
+
+    /**
+     * A response should include the request that generated it.
+     */
+    public function testRequestOnResponse() {
+        $request = new HttpRequest('GET', 'http://garden-http.dev:8080/hello', '', ['Referer' => __CLASS__]);
+        $response = $request->send();
+
+        $this->assertSame($request, $response->getRequest());
+    }
 }

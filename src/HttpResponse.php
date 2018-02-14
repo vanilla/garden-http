@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2016 Vanilla Forums Inc.
+ * @copyright 2009-2018 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -28,6 +28,11 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @var string
      */
     protected $rawBody;
+
+    /**
+     * @var HttpRequest
+     */
+    protected $request;
 
     /**
      * @var array HTTP response codes and messages.
@@ -394,5 +399,25 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     public function offsetUnset($offset) {
         $this->getBody();
         unset($this->body[$offset]);
+    }
+
+    /**
+     * Get the request that generated this response.
+     *
+     * @return HttpRequest|null Returns the request.
+     */
+    public function getRequest() {
+        return $this->request;
+    }
+
+    /**
+     * Set the request that corresponds to this response.
+     *
+     * @param HttpRequest $request The request that generated this response.
+     * @return $this
+     */
+    public function setRequest(HttpRequest $request = null) {
+        $this->request = $request;
+        return $this;
     }
 }
