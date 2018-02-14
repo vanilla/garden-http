@@ -26,6 +26,17 @@ class HttpResponseException extends \Exception {
     }
 
     /**
+     * Get the request that generated the exception.
+     *
+     * This is a convenience method that returns the request from the response property.
+     *
+     * @return HttpRequest
+     */
+    public function getRequest(): HttpRequest {
+        return $this->response->getRequest();
+    }
+
+    /**
      * Get the response that generated the exception.
      *
      * @return HttpResponse Returns an HTTP response.

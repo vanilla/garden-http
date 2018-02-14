@@ -10,6 +10,7 @@ namespace Garden\Http\Tests;
 use Garden\Http\HttpClient;
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
+use Garden\Http\HttpResponseException;
 
 
 /**
@@ -158,6 +159,20 @@ class HttpClientTest extends \PHPUnit_Framework_TestCase {
 
         $response = $api->get('/basic-protected/fooz/bar.json');
         $this->assertSame(401, $response->getStatusCode());
+    }
+
+    public function testResponseInException() {
+        $api = $this->getApi();
+        $api->setDefaultOption('auth', ['foo', 'bar']);
+
+        try {
+            $response = $api->get('/basic-protected/fooz/bar.json');
+        } catch (HttpResponseException $ex) {
+            $this->assertInstanceOf(HttpResponse::class, $ex->getResponse());
+            $this->assertInstanceOf(HttpRequest::class, $ex->getRequest());
+            $this->assertSame($ex->getResponse()->getRequest(), $ex->getRequest());
+            $this->assertSame($ex->getCode(), $ex->getResponse()->getStatusCode());
+        }
     }
 
 

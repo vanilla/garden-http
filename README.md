@@ -146,8 +146,16 @@ class GithubClient extends HttpClient {
             } else {
                 $message = $response->getReasonPhrase();
             }
-            throw new \Exception($message, $response->getStatusCode());
+            throw new \HttpResponseExceptionException($response, $message);
         }
     }
 }
 ```
+
+Inspecting Requests and Responses
+---------------------------------
+
+Sometimes when you get a response you want to know what request generated it. The `HttpResponse` class has an `getRequest()` method for this.
+
+Exceptions that are thrown from `HttpClient` objects are instances of the `HttpResponseException` class. That class has `getRequest()` and `getResponse()` methods so that you can inspect both the request and the response for the exception. This exception is of particular use since request objects are created inside the client and not by the programmer directly.
+

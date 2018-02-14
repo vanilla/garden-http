@@ -15,7 +15,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     /// Properties ///
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $statusCode;
 
@@ -133,7 +133,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * This method will try and keep the raw body in sync with the value set here.
      *
-     * @param array|string $body The new body.
+     * @param mixed $body The new body.
      * @return $this
      */
     public function setBody($body) {
