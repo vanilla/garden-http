@@ -146,7 +146,7 @@ abstract class HttpMessage {
     /**
      * Parse the http response headers from a response.
      *
-     * @param mixed $headers Either the header string from a curl response or an array of header lines.
+     * @param string|array $headers Either the header string from a curl response or an array of header lines.
      * @return array
      */
     private function parseHeaders($headers): array {
