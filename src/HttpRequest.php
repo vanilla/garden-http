@@ -42,7 +42,7 @@ class HttpRequest extends HttpMessage {
     /**
      * @var int
      */
-    protected $timeout;
+    protected $timeout = 0;
 
     /**
      * @var bool
@@ -65,7 +65,7 @@ class HttpRequest extends HttpMessage {
      * - auth: A username/password used to send basic HTTP authentication with the request.
      * - timeout: The number of seconds to wait before the request times out. A value of zero means no timeout.
      */
-    public function __construct($method = self::METHOD_GET, $url = '', $body = '', array $headers = [], array $options = []) {
+    public function __construct(string $method = self::METHOD_GET, string $url = '', $body = '', array $headers = [], array $options = []) {
         $this->setMethod(strtoupper($method));
         $this->setUrl($url);
         $this->setBody($body);
@@ -88,7 +88,7 @@ class HttpRequest extends HttpMessage {
      *
      * @return array Returns the auth.
      */
-    public function getAuth() {
+    public function getAuth(): array {
         return $this->auth;
     }
 
@@ -108,7 +108,7 @@ class HttpRequest extends HttpMessage {
      *
      * @return HttpResponse Returns the response from the API.
      */
-    public function send() {
+    public function send(): HttpResponse {
         $ch = $this->createCurl();
         $response = $this->execCurl($ch);
         curl_close($ch);
@@ -233,7 +233,7 @@ class HttpRequest extends HttpMessage {
      *
      * @return string Returns the HTTP method.
      */
-    public function getMethod() {
+    public function getMethod(): string {
         return $this->method;
     }
 
@@ -243,7 +243,7 @@ class HttpRequest extends HttpMessage {
      * @param string $method The new HTTP method.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
-    public function setMethod($method) {
+    public function setMethod(string $method) {
         $this->method = strtoupper($method);
         return $this;
     }
@@ -253,7 +253,7 @@ class HttpRequest extends HttpMessage {
      *
      * @return string Returns the URL.
      */
-    public function getUrl() {
+    public function getUrl(): string {
         return $this->url;
     }
 
@@ -263,7 +263,7 @@ class HttpRequest extends HttpMessage {
      * @param string $url The new URL.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
-    public function setUrl($url) {
+    public function setUrl(string $url) {
         $this->url = $url;
         return $this;
     }
@@ -276,7 +276,7 @@ class HttpRequest extends HttpMessage {
      *
      * @return boolean Returns the verifyPeer.
      */
-    public function getVerifyPeer() {
+    public function getVerifyPeer(): bool {
         return $this->verifyPeer;
     }
 
@@ -286,7 +286,7 @@ class HttpRequest extends HttpMessage {
      * @param bool $verifyPeer The new verify peer setting.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
-    public function setVerifyPeer($verifyPeer) {
+    public function setVerifyPeer(bool $verifyPeer) {
         $this->verifyPeer = $verifyPeer;
         return $this;
     }
@@ -296,7 +296,7 @@ class HttpRequest extends HttpMessage {
      *
      * @return int Returns the timeout in seconds.
      */
-    public function getTimeout() {
+    public function getTimeout(): int {
         return $this->timeout;
     }
 
@@ -306,7 +306,7 @@ class HttpRequest extends HttpMessage {
      * @param int $timeout The new request timeout in seconds.
      * @return HttpRequest Returns `$this` for fluent calls.
      */
-    public function setTimeout($timeout) {
+    public function setTimeout(int $timeout) {
         $this->timeout = $timeout;
         return $this;
     }

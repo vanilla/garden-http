@@ -35,7 +35,7 @@ class HttpClient {
      *
      * @param string $baseUrl The base URL prefix of the API.
      */
-    public function __construct($baseUrl = '') {
+    public function __construct(string $baseUrl = '') {
         $this->baseUrl = $baseUrl;
         $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
     }
@@ -47,7 +47,7 @@ class HttpClient {
      * @param array $query The query to turn into a querystring.
      * @return string Returns the final uri.
      */
-    protected static function appendQuery($uri, array $query = []) {
+    protected static function appendQuery(string $uri, array $query = []): string {
         if (!empty($query)) {
             $qs = http_build_query($query);
             $uri .= (strpos($uri, '?') === false ? '?' : '&').$qs;
@@ -65,7 +65,7 @@ class HttpClient {
      * @param array $options Additional options to be sent with the request.
      * @return HttpRequest Returns the new {@link HttpRequest} object.
      */
-    public function createRequest($method, $uri, $body, array $headers = [], array $options = []) {
+    public function createRequest(string $method, string $uri, $body, array $headers = [], array $options = []) {
         if (strpos($uri, '//') === false) {
             $uri = $this->baseUrl.'/'.ltrim($uri, '/');
         }
@@ -86,7 +86,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function delete($uri, array $query = [], array $headers = [], $options = []) {
+    public function delete(string $uri, array $query = [], array $headers = [], array $options = []) {
         $uri = static::appendQuery($uri, $query);
 
         return $this->request(HttpRequest::METHOD_DELETE, $uri, '', $headers, $options);
@@ -101,7 +101,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function get($uri, array $query = [], array $headers = [], $options = []) {
+    public function get(string $uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
 
         return $this->request(HttpRequest::METHOD_GET, $uri, '', $headers, $options);
@@ -148,7 +148,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function head($uri, array $query = [], array $headers = [], $options = []) {
+    public function head(string $uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
         return $this->request(HttpRequest::METHOD_HEAD, $uri, '', $headers, $options);
     }
@@ -163,7 +163,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function options($uri, array $query = [], array $headers = [], $options = []) {
+    public function options(string $uri, array $query = [], array $headers = [], $options = []) {
         $uri = static::appendQuery($uri, $query);
         return $this->request(HttpRequest::METHOD_OPTIONS, $uri, '', $headers, $options);
     }
@@ -177,7 +177,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function patch($uri, $body = [], array $headers = [], $options = []) {
+    public function patch(string $uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_PATCH, $uri, $body, $headers, $options);
     }
 
@@ -190,7 +190,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function post($uri, $body = [], array $headers = [], $options = []) {
+    public function post(string $uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_POST, $uri, $body, $headers, $options);
     }
 
@@ -203,7 +203,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function put($uri, $body = [], array $headers = [], $options = []) {
+    public function put(string $uri, $body = [], array $headers = [], $options = []) {
         return $this->request(HttpRequest::METHOD_PUT, $uri, $body, $headers, $options);
     }
 
@@ -217,7 +217,7 @@ class HttpClient {
      * @param array $options An array of additional options for the request.
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
-    public function request($method, $uri, $body, $headers = [], array $options = []) {
+    public function request(string $method, string $uri, $body, array $headers = [], array $options = []) {
         $request = $this->createRequest($method, $uri, $body, $headers, $options);
         $response = $request->send();
 
@@ -233,7 +233,7 @@ class HttpClient {
      *
      * @return string Returns the baseUrl.
      */
-    public function getBaseUrl() {
+    public function getBaseUrl(): string {
         return $this->baseUrl;
     }
 
@@ -243,7 +243,7 @@ class HttpClient {
      * @param string $baseUrl The base URL of the API.
      * @return HttpClient Returns `$this` for fluent calls.
      */
-    public function setBaseUrl($baseUrl) {
+    public function setBaseUrl(string $baseUrl) {
         $this->baseUrl = rtrim($baseUrl, '/');
         return $this;
     }
@@ -257,7 +257,7 @@ class HttpClient {
      * @param mixed $default The value to return if there is no default header.
      * @return mixed Returns the value of the default header.
      */
-    public function getDefaultHeader($name, $default = null) {
+    public function getDefaultHeader(string $name, $default = null) {
         return $this->val($name, $this->defaultHeaders, $default);
     }
 
@@ -268,7 +268,7 @@ class HttpClient {
      * @param string $value The new value of the default header.
      * @return HttpClient Returns `$this` for fluent calls.
      */
-    public function setDefaultHeader($name, $value) {
+    public function setDefaultHeader(string $name, string $value) {
         $this->defaultHeaders[$name] = $value;
         return $this;
     }
@@ -280,7 +280,7 @@ class HttpClient {
      *
      * @return array Returns the default headers.
      */
-    public function getDefaultHeaders() {
+    public function getDefaultHeaders(): array {
         return $this->defaultHeaders;
     }
 
@@ -290,7 +290,7 @@ class HttpClient {
      * @param array $defaultHeaders The new default headers.
      * @return HttpClient Returns `$this` for fluent calls.
      */
-    public function setDefaultHeaders($defaultHeaders) {
+    public function setDefaultHeaders(array $defaultHeaders) {
         $this->defaultHeaders = $defaultHeaders;
         return $this;
     }
@@ -302,7 +302,7 @@ class HttpClient {
      * @param mixed $default The value to return if there is no default option set.
      * @return mixed Returns the default option or {@link $default}.
      */
-    public function getDefaultOption($name, $default = null) {
+    public function getDefaultOption(string $name, $default = null) {
         return $this->val($name, $this->defaultOptions, $default);
     }
 
@@ -313,7 +313,7 @@ class HttpClient {
      * @param mixed $value The new value of the default option.
      * @return HttpClient Returns `$this` for fluent calls.
      */
-    public function setDefaultOption($name, $value) {
+    public function setDefaultOption(string $name, $value) {
         $this->defaultOptions[$name] = $value;
         return $this;
     }
@@ -323,7 +323,7 @@ class HttpClient {
      *
      * @return array Returns an array of default options.
      */
-    public function getDefaultOptions() {
+    public function getDefaultOptions(): array {
         return $this->defaultOptions;
     }
 
@@ -332,7 +332,7 @@ class HttpClient {
      *
      * @return boolean Returns `true` if exceptions should be thrown or `false` otherwise.
      */
-    public function getThrowExceptions() {
+    public function getThrowExceptions(): bool {
         return $this->throwExceptions;
     }
 
@@ -342,7 +342,7 @@ class HttpClient {
      * @param boolean $throwExceptions Whether or not to throw exceptions when an error response is encountered.
      * @return HttpClient Returns `$this` for fluent calls.
      */
-    public function setThrowExceptions($throwExceptions) {
+    public function setThrowExceptions(bool $throwExceptions) {
         $this->throwExceptions = $throwExceptions;
         return $this;
     }
@@ -353,7 +353,7 @@ class HttpClient {
      * @param array $defaultOptions The new default options array.
      * @return HttpClient Returns `$this` for fluent calls.
      */
-    public function setDefaultOptions($defaultOptions) {
+    public function setDefaultOptions(array $defaultOptions) {
         $this->defaultOptions = $defaultOptions;
         return $this;
     }

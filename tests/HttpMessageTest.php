@@ -91,7 +91,7 @@ class HttpMessageTest extends \PHPUnit_Framework_TestCase {
         $response->setReasonPhrase($reason);
         $this->assertSame($reason, $response->getReasonPhrase());
 
-        $code = '222';
+        $code = 222;
         $response->setStatusCode($code);
         $this->assertSame($code, $response->getStatusCode());
     }
