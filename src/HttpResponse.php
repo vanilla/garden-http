@@ -95,11 +95,11 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param array|string $headers An array of response headers or a header string.
      * @param string $rawBody The raw body of the response.
      */
-    public function __construct($status = 200, $headers = '', string $rawBody = '') {
+    public function __construct($status = null, $headers = '', string $rawBody = '') {
         $this->setHeaders($headers);
         if (isset($status)) {
             $this->setStatus($status);
-        } elseif (is_null($this->getStatusCode())) {
+        } elseif ($this->statusCode === null) {
             $this->setStatus(200);
         }
         $this->rawBody = $rawBody;
