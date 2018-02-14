@@ -47,7 +47,7 @@ abstract class HttpMessage {
      * @param string $value The value of the header.
      * @return HttpMessage $this Returns `$this` for fluent calls.
      */
-    public function addHeader($name, $value) {
+    public function addHeader(string $name, string $value) {
         $key = strtolower($name);
         $this->headerNames[$key] = $name;
         $this->headers[$key][] = $value;
@@ -69,7 +69,7 @@ abstract class HttpMessage {
      * @param string $name Case-insensitive header field name.
      * @return string
      */
-    public function getHeader($name) {
+    public function getHeader(string $name): string {
         $lines = $this->getHeaderLines($name);
         return implode(',', $lines);
     }
@@ -80,7 +80,7 @@ abstract class HttpMessage {
      * @param string $name Case-insensitive header field name.
      * @return string[]
      */
-    public function getHeaderLines($name) {
+    public function getHeaderLines(string $name): array {
         $key = strtolower($name);
         $result = isset($this->headers[$key]) ? $this->headers[$key] : [];
         return $result;
@@ -98,7 +98,7 @@ abstract class HttpMessage {
      * @return array Returns an associative array of the message's headers.
      * Each key is a header name, and each value is an an array of strings.
      */
-    public function getHeaders() {
+    public function getHeaders(): array {
         $result = [];
 
         foreach ($this->headers as $key => $lines) {
@@ -149,7 +149,7 @@ abstract class HttpMessage {
      * @param mixed $headers Either the header string from a curl response or an array of header lines.
      * @return array
      */
-    private function parseHeaders($headers) {
+    private function parseHeaders($headers): array {
         if (is_string($headers)) {
             $headers = explode("\r\n", $headers);
         }
@@ -185,7 +185,7 @@ abstract class HttpMessage {
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($header) {
+    public function hasHeader(string $header): bool {
         return !empty($this->headers[strtolower($header)]);
     }
 
@@ -196,7 +196,7 @@ abstract class HttpMessage {
      * @param string|string[]|null $value The value of the new header. Pass `null` to remove the header.
      * @return HttpMessage Returns $this for fluent calls.
      */
-    public function setHeader($name, $value) {
+    public function setHeader(string $name, $value) {
         $key = strtolower($name);
 
         if ($value === null) {
@@ -214,7 +214,7 @@ abstract class HttpMessage {
      *
      * @return string Returns the current HTTP protocol version.
      */
-    public function getProtocolVersion() {
+    public function getProtocolVersion(): string {
         return $this->protocolVersion;
     }
 
@@ -227,7 +227,7 @@ abstract class HttpMessage {
      * @param string $protocolVersion The new protocol version to set.
      * @return HttpMessage Returns `$this` for fluent calls.
      */
-    public function setProtocolVersion($protocolVersion) {
+    public function setProtocolVersion(string $protocolVersion) {
         $this->protocolVersion = $protocolVersion;
         return $this;
     }

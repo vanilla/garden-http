@@ -95,7 +95,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param array|string $headers An array of response headers or a header string.
      * @param string $rawBody The raw body of the response.
      */
-    public function __construct($status = 200, $headers = '', $rawBody = '') {
+    public function __construct($status = 200, $headers = '', string $rawBody = '') {
         $this->setHeaders($headers);
         if (isset($status)) {
             $this->setStatus($status);
@@ -182,7 +182,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param string $class A string representation of the HTTP status code, with 'x' used as a wildcard.
      * @return boolean Returns `true` if the response code matches the {@link $class}, `false` otherwise.
      */
-    public function isResponseClass($class) {
+    public function isResponseClass(string $class): bool {
         $pattern = '`^'.str_ireplace('x', '\d', preg_quote($class, '`')).'$`';
         $result = preg_match($pattern, $this->statusCode);
 
@@ -194,7 +194,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @return bool Returns `true` if the response was a successful 2xx code.
      */
-    public function isSuccessful() {
+    public function isSuccessful(): bool {
         return $this->isResponseClass('2xx');
     }
 
@@ -203,7 +203,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @return string The raw body of the response.
      */
-    public function getRawBody() {
+    public function getRawBody(): string {
         return $this->rawBody;
     }
 
@@ -212,7 +212,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @param string $body The new raw body.
      */
-    public function setRawBody($body) {
+    public function setRawBody(string $body) {
         $this->rawBody = $body;
         $this->body = null;
         return $this;
@@ -223,7 +223,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @return string Returns the raw body of the response.
      */
-    public function __toString() {
+    public function __toString(): string {
         return $this->rawBody;
     }
 
@@ -232,7 +232,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @return string Returns the status code and reason phrase separated by a space.
      */
-    public function getStatus() {
+    public function getStatus(): string {
         return trim("{$this->statusCode} {$this->reasonPhrase}");
     }
 
@@ -264,8 +264,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @return int Returns the code.
      */
-    public function getStatusCode() {
-        return $this->statusCode;
+    public function getStatusCode(): int {
+        return $this->statusCode ?? 200;
     }
 
     /**
@@ -274,7 +274,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param int $statusCode The new status code of the response.
      * @return HttpResponse Returns `$this` for fluent calls.
      */
-    public function setStatusCode($statusCode) {
+    public function setStatusCode(int $statusCode) {
         $this->statusCode = $statusCode;
         return $this;
     }
@@ -284,7 +284,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      *
      * @return string Returns the reason phrase.
      */
-    public function getReasonPhrase() {
+    public function getReasonPhrase(): string {
         return $this->reasonPhrase;
     }
 
@@ -294,7 +294,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param string $reasonPhrase The new reason phrase.
      * @return HttpResponse Returns `$this` for fluent calls.
      */
-    public function setReasonPhrase($reasonPhrase) {
+    public function setReasonPhrase(string $reasonPhrase) {
         $this->reasonPhrase = $reasonPhrase;
         return $this;
     }
@@ -305,7 +305,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * @param string|array $headers Either a header string or a header array.
      * @return string Returns the status line or an empty string if the first line is not an HTTP status.
      */
-    private function parseStatusLine($headers) {
+    private function parseStatusLine($headers): string {
         if (empty($headers)) {
             return '';
         }
@@ -339,7 +339,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
      * The return value will be casted to boolean if non-boolean was returned.
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset): bool {
         $body = $this->getBody();
         return isset($body[$offset]);
     }
