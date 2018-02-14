@@ -14,7 +14,7 @@ that you use regularly.
 Installation
 ------------
 
-*Garden HTTP requires PHP 5.4 or higher and libcurl*
+*Garden HTTP requires PHP 7.0 or higher and libcurl*
 
 Garden HTTP is [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) compliant and can be installed using [composer](//getcomposer.org). Just add `vanilla/garden-http` to your composer.json.
 
