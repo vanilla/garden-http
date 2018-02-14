@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2016 Vanilla Forums Inc.
+ * @copyright 2009-2018 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -203,7 +203,6 @@ class HttpRequest extends HttpMessage {
      *
      * @param resource $ch The curl handle to execute.
      * @return HttpResponse Returns an {@link RestResponse} object with the information from the request
-     * @throws \Exception Throws an exception when the request returns a non 2xx response..
      */
     protected function execCurl($ch) {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -225,6 +224,8 @@ class HttpRequest extends HttpMessage {
         }
 
         $result = new HttpResponse($status, $rawHeaders, $rawBody);
+        $result->setRequest($this);
+
         return $result;
     }
 

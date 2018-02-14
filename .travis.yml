@@ -4,7 +4,7 @@ php:
     - 7.0
     - 7.1
     - 7.2
-    - hhvm
+    - nightly
 
 dist: trusty
 
@@ -12,7 +12,7 @@ sudo: false
 
 matrix:
     allow_failures:
-        - php: hhvm
+        - php: nightly
     fast_finish: true
 
 install:
@@ -33,11 +33,8 @@ addons:
         - garden-http.dev
 
 after_script:
-- if [ "$PHP_VERSION" != 'hhvm' ]
-- then
 - wget https://scrutinizer-ci.com/ocular.phar
 - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-- fi
 
 notifications:
     hipchat:

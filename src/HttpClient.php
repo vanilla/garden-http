@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2016 Vanilla Forums Inc.
+ * @copyright 2009-2018 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -125,7 +125,7 @@ class HttpClient {
      *
      * @param HttpResponse $response The response sent from the API.
      * @param array $options The options that were sent with the request.
-     * @throws \Exception Throws an exception if the settings or options say to throw an exception.
+     * @throws HttpResponseException Throws an exception if the settings or options say to throw an exception.
      */
     public function handleErrorResponse(HttpResponse $response, $options = []) {
         if ($this->val('throw', $options, $this->throwExceptions)) {
@@ -135,7 +135,7 @@ class HttpClient {
             } else {
                 $message = $response->getReasonPhrase();
             }
-            throw new \Exception($message, $response->getStatusCode());
+            throw new HttpResponseException($response, $message);
         }
     }
 
