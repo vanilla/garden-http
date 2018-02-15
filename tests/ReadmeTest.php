@@ -9,11 +9,12 @@ namespace Garden\Http\Tests;
 
 use Garden\Http\HttpClient;
 use Garden\Http\Tests\Fixtures\HmacMiddleware;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test cases for the README.
  */
-class ReadmeTest extends \PHPUnit_Framework_TestCase {
+class ReadmeTest extends TestCase {
     public function testBasicExample() {
         $api = new HttpClient('http://httpbin.org');
         $api->setDefaultHeader('Content-Type', 'application/json');
