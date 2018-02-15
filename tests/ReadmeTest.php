@@ -8,6 +8,7 @@
 namespace Garden\Http\Tests;
 
 use Garden\Http\HttpClient;
+use Garden\Http\Tests\Fixtures\HmacMiddleware;
 
 /**
  * Test cases for the README.
@@ -64,5 +65,14 @@ class ReadmeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $r1->getStatusCode());
         $this->assertEquals(200, $r2->getStatusCode());
+    }
+
+    public function testRequestMiddleware() {
+        $api = new HttpClient('https://httpbin.org');
+        $api->addMiddleware(new HmacMiddleware('key', 'password'));
+
+        $r = $api->get('/get');
+
+        $this->assertNotEmpty($r['headers']['Authorization']);
     }
 }

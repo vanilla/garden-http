@@ -1,5 +1,4 @@
-Garden HTTP
-===========
+# Garden HTTP
 
 [![Build Status](https://img.shields.io/travis/vanilla/garden-http.svg?style=flat)](https://travis-ci.org/vanilla/garden-http)
 [![Coverage](http://img.shields.io/scrutinizer/coverage/g/vanilla/garden-http.svg?style=flat)](https://scrutinizer-ci.com/g/vanilla/garden-http/)
@@ -11,21 +10,18 @@ people's APIs without having to copy/paste a bunch of cURL setup and without hav
 You can use this library as is for quick API clients or extend the `HttpClient` class to make structured API clients
 that you use regularly.
 
-Installation
-------------
+## Installation
 
 *Garden HTTP requires PHP 7.0 or higher and libcurl*
 
 Garden HTTP is [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) compliant and can be installed using [composer](//getcomposer.org). Just add `vanilla/garden-http` to your composer.json.
 
-Basic Example
--------------
+## Basic Example
 
 Almost all uses of Garden HTTP involve first creating an `HttpClient` object and then making requests from it.
 You can see below a default header is also set to pass a standard header to every request made with the client.
 
-```PHP
-
+```php
 use Garden\Http\HttpClient;
 
 $api = new HttpClient('http://httpbin.org');
@@ -44,12 +40,11 @@ if ($response->isResponseClass('2xx')) {
 }
 ```
 
-Throwing Exceptions
--------------------
+## Throwing Exceptions
 
 You can tell the HTTP client to throw an exception on unsuccessful requests.
 
-```PHP
+```php
 use Garden\Http\HttpClient;
 
 $api = new HttpClient('https://httpbin.org');
@@ -63,8 +58,7 @@ try {
 }
 ```
 
-Basic Authentication
---------------------
+## Basic Authentication
 
 You can specify a username and password for basic authentication using the `auth` option.
 
@@ -81,8 +75,7 @@ $r1 = $api->get('/basic-auth/username/password123');
 $r2 = $api->get('/basic-auth/username/password', [], [], ['auth' => ['username', 'password']]);
 ```
 
-Extending the HttpClient
--------------------------
+## Extending the HttpClient through subclassing
 
 If you are going to be calling the same API over and over again you might want to extend the `HttpClient` class
 to make an API client that is more convenient to reuse.
@@ -152,8 +145,60 @@ class GithubClient extends HttpClient {
 }
 ```
 
-Inspecting Requests and Responses
----------------------------------
+## Extending the HttpClient with middleware
+
+The `HttpClient` class has an `addMiddleware()` method that lets you add a function that can modify the request and response before and after being sent. Middleware lets you develop a library of reusable utilities that can be used with any client. Middleware is good for things like advanced authentication, caching layers, CORS support, etc.
+
+### Writing middleware
+
+Middleware is a callable that accepts two arguments: an `HttpRequest` object, and the next middleware. Each middleware must return an `HttpResponse` object.
+
+```php
+function (HttpRequest $request, callable $next): HttpResponse {
+    // Do something to the request.
+    $request->setHeader('X-Foo', '...');
+    
+    // Call the next middleware to get the response.
+    $response = $next($request);
+    
+    // Do something to the response.
+    $response->setHeader('Cache-Control', 'public, max-age=31536000');
+    
+    return $response;
+}
+```
+
+You have to call `$next` or else the request won't be processed by the `HttpClient`. Of course, you may want to short circuit processing of the request in the case of a caching layer so in that case you can leave out the call to `$next`.
+
+### Example: Modifying the request with middleware
+
+Consider the following class that implements HMAC SHA256 hashing for a hypothetical API that expects more than just a static access token.
+
+```php
+class HmacMiddleware {
+    protected $apiKey;
+
+    protected $secret;
+
+    public function __construct(string $apiKey, string $secret) {
+        $this->apiKey = $apiKey;
+        $this->secret = $secret;
+    }
+
+    public function __invoke(HttpRequest $request, callable $next): HttpResponse {
+        $msg = time().$this->apiKey;
+        $sig = hash_hmac('sha256', $msg, $this->secret);
+
+        $request->setHeader('Authorization', "$msg.$sig");
+
+        return $next($request);
+    }
+}
+```
+
+This middleware calculates a new authorization header for each request and then adds it to the request. It then calls the `$next` closure to perform the rest of the request.
+
+## Inspecting requests and responses
 
 Sometimes when you get a response you want to know what request generated it. The `HttpResponse` class has an `getRequest()` method for this.
 
