@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2016 Vanilla Forums Inc.
+ * @copyright 2009-2018 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -9,11 +9,12 @@ namespace Garden\Http\Tests;
 
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Contains tests against the {@link HttpMessage}, {@link HttpRequest}, and  {@link HttpResponse}classes.
  */
-class HttpMessageTest extends \PHPUnit_Framework_TestCase {
+class HttpMessageTest extends TestCase {
 
     /**
      * Test basic case-insensitive header access.

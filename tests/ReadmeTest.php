@@ -1,18 +1,20 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2016 Vanilla Forums Inc.
+ * @copyright 2009-2018 Vanilla Forums Inc.
  * @license MIT
  */
 
 namespace Garden\Http\Tests;
 
 use Garden\Http\HttpClient;
+use Garden\Http\Tests\Fixtures\HmacMiddleware;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test cases for the README.
  */
-class ReadmeTest extends \PHPUnit_Framework_TestCase {
+class ReadmeTest extends TestCase {
     public function testBasicExample() {
         $api = new HttpClient('http://httpbin.org');
         $api->setDefaultHeader('Content-Type', 'application/json');
@@ -64,5 +66,14 @@ class ReadmeTest extends \PHPUnit_Framework_TestCase {
 
         $this->assertEquals(200, $r1->getStatusCode());
         $this->assertEquals(200, $r2->getStatusCode());
+    }
+
+    public function testRequestMiddleware() {
+        $api = new HttpClient('https://httpbin.org');
+        $api->addMiddleware(new HmacMiddleware('key', 'password'));
+
+        $r = $api->get('/get');
+
+        $this->assertNotEmpty($r['headers']['Authorization']);
     }
 }

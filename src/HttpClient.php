@@ -24,9 +24,20 @@ class HttpClient {
      */
     protected $defaultHeaders = [];
 
+    /**
+     * @var array The default options for all requests.
+     */
     protected $defaultOptions = [];
 
+    /**
+     * @var bool Whether or not to throw exceptions on non-2xx responses.
+     */
     protected $throwExceptions = false;
+
+    /**
+     * @var callable Middleware that modifies requests and responses.
+     */
+    protected $middleware;
 
     /// Methods ///
 
@@ -38,6 +49,9 @@ class HttpClient {
     public function __construct(string $baseUrl = '') {
         $this->baseUrl = $baseUrl;
         $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
+        $this->middleware = function (HttpRequest $request): HttpResponse {
+            return $request->send();
+        };
     }
 
     /**
@@ -118,7 +132,7 @@ class HttpClient {
      * following `if` statement:
      *
      * ```php
-     * if ($this->val('throw', $options, $this->throwExceptions)) {
+     * if ($options['throw'] ?? $this->throwExceptions) {
      * ...
      * }
      * ```
@@ -128,10 +142,10 @@ class HttpClient {
      * @throws HttpResponseException Throws an exception if the settings or options say to throw an exception.
      */
     public function handleErrorResponse(HttpResponse $response, $options = []) {
-        if ($this->val('throw', $options, $this->throwExceptions)) {
+        if ($options['throw'] ?? $this->throwExceptions) {
             $body = $response->getBody();
             if (is_array($body)) {
-                $message = $this->val('message', $body, $response->getReasonPhrase());
+                $message = $body['message'] ?? $response->getReasonPhrase();
             } else {
                 $message = $response->getReasonPhrase();
             }
@@ -219,7 +233,8 @@ class HttpClient {
      */
     public function request(string $method, string $uri, $body, array $headers = [], array $options = []) {
         $request = $this->createRequest($method, $uri, $body, $headers, $options);
-        $response = $request->send();
+        // Call the chain of middleware on the request.
+        $response = call_user_func($this->middleware, $request);
 
         if (!$response->isResponseClass('2xx')) {
             $this->handleErrorResponse($response, $options);
@@ -258,7 +273,7 @@ class HttpClient {
      * @return mixed Returns the value of the default header.
      */
     public function getDefaultHeader(string $name, $default = null) {
-        return $this->val($name, $this->defaultHeaders, $default);
+        return $this->defaultHeaders[$name] ?? $default;
     }
 
     /**
@@ -303,7 +318,7 @@ class HttpClient {
      * @return mixed Returns the default option or {@link $default}.
      */
     public function getDefaultOption(string $name, $default = null) {
-        return $this->val($name, $this->defaultOptions, $default);
+        return $this->defaultOptions[$name] ?? $default;
     }
 
     /**
@@ -359,12 +374,46 @@ class HttpClient {
     }
 
     /**
+     * Add a middleware function to the client.
+     *
+     * A Middleware is a callable that has the following signature:
+     *
+     * ```php
+     * function middleware(HttpRequest $request, callable $next): HttpResponse {
+     *      // Optionally modify the request.
+     *      $request->setHeader('X-Foo', 'bar');
+     *
+     *      // Process the request by calling $next. You must always call next.
+     *      $response = $next($request);
+     *
+     *      // Optionally modify the response.
+     *      $response->setHeader('Access-Control-Allow-Origin', '*');
+     *
+     *      return $response;
+     * }
+     * ```
+     *
+     * @param callable $middleware The middleware callback to add.
+     * @return $this
+     */
+    public function addMiddleware(callable $middleware) {
+        $next = $this->middleware;
+
+        $this->middleware = function (HttpRequest $request) use ($middleware, $next): HttpResponse {
+            return $middleware($request, $next);
+        };
+
+        return $this;
+    }
+
+    /**
      * Safely get a value out of an array.
      *
      * @param string|int $key The array key.
      * @param array $array The array to get the value from.
      * @param mixed $default The default value to return if the key doesn't exist.
      * @return mixed The item from the array or `$default` if the array key doesn't exist.
+     * @deprecated
      */
     protected function val($key, $array, $default = null) {
         if (isset($array[$key])) {

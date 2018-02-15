@@ -171,7 +171,11 @@ abstract class HttpMessage {
                     continue;
                 }
             }
-            $result[$key][] = $line;
+            if (is_array($line)) {
+                $result[$key] = array_merge($result[$key] ?? [], $line);
+            } else {
+                $result[$key][] = $line;
+            }
         }
 
         return $result;

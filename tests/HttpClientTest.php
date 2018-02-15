@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2016 Vanilla Forums Inc.
+ * @copyright 2009-2018 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -11,12 +11,12 @@ use Garden\Http\HttpClient;
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
 use Garden\Http\HttpResponseException;
-
+use PHPUnit\Framework\TestCase;
 
 /**
  * Contains tests against the {@link HttpClient} class.
  */
-class HttpClientTest extends \PHPUnit_Framework_TestCase {
+class HttpClientTest extends TestCase {
     /**
      * Get the API that will be used to make test calls.
      *

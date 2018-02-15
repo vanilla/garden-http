@@ -311,4 +311,20 @@ class HttpRequest extends HttpMessage {
         $this->timeout = $timeout;
         return $this;
     }
+
+    /**
+     * Get constructor options as an array.
+     *
+     * This method is useful for copying requests as it can be passed into constructors.
+     *
+     * @return array Returns an array of options.
+     */
+    public function getOptions(): array {
+        return [
+            'protocolVersion' => $this->getProtocolVersion(),
+            'auth' => $this->getAuth(),
+            'timeout' => $this->getTimeout(),
+            'verifyPeer' => $this->getVerifyPeer()
+        ];
+    }
 }
