@@ -56,10 +56,10 @@ class GithubClient extends HttpClient {
     // Different APIs will return different responses on errors.
     // Override this method to handle errors in a way that is appropriate for the API.
     public function handleErrorResponse(HttpResponse $response, $options = []) {
-        if ($this->val('throw', $options, $this->throwExceptions)) {
+        if ($options['throw'] ?? $this->throwExceptions) {
             $body = $response->getBody();
             if (is_array($body)) {
-                $message = $this->val('message', $body, $response->getReasonPhrase());
+                $message = $body['message'] ?? $response->getReasonPhrase();
             } else {
                 $message = $response->getReasonPhrase();
             }

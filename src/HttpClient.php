@@ -24,8 +24,14 @@ class HttpClient {
      */
     protected $defaultHeaders = [];
 
+    /**
+     * @var array The default options for all requests.
+     */
     protected $defaultOptions = [];
 
+    /**
+     * @var bool Whether or not to throw exceptions on non-2xx responses.
+     */
     protected $throwExceptions = false;
 
     /// Methods ///
@@ -118,7 +124,7 @@ class HttpClient {
      * following `if` statement:
      *
      * ```php
-     * if ($this->val('throw', $options, $this->throwExceptions)) {
+     * if ($options['throw'] ?? $this->throwExceptions) {
      * ...
      * }
      * ```
@@ -128,10 +134,10 @@ class HttpClient {
      * @throws HttpResponseException Throws an exception if the settings or options say to throw an exception.
      */
     public function handleErrorResponse(HttpResponse $response, $options = []) {
-        if ($this->val('throw', $options, $this->throwExceptions)) {
+        if ($options['throw'] ?? $this->throwExceptions) {
             $body = $response->getBody();
             if (is_array($body)) {
-                $message = $this->val('message', $body, $response->getReasonPhrase());
+                $message = $body['message'] ?? $response->getReasonPhrase();
             } else {
                 $message = $response->getReasonPhrase();
             }
@@ -303,7 +309,7 @@ class HttpClient {
      * @return mixed Returns the default option or {@link $default}.
      */
     public function getDefaultOption(string $name, $default = null) {
-        return $this->val($name, $this->defaultOptions, $default);
+        return $this->defaultOptions[$name] ?? $default;
     }
 
     /**
@@ -365,6 +371,7 @@ class HttpClient {
      * @param array $array The array to get the value from.
      * @param mixed $default The default value to return if the key doesn't exist.
      * @return mixed The item from the array or `$default` if the array key doesn't exist.
+     * @deprecated
      */
     protected function val($key, $array, $default = null) {
         if (isset($array[$key])) {
