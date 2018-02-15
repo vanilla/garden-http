@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-namespace Garden\Http\Tests;
+namespace Garden\Http\Tests\Fixtures;
 
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;

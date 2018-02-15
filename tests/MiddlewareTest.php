@@ -10,6 +10,7 @@ namespace Garden\Http\Tests;
 use Garden\Http\HttpClient;
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
+use Garden\Http\Tests\Fixtures\MockRequest;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -8,6 +8,9 @@
 
 namespace Garden\Http;
 
+/**
+ * An exception that occurs when there is a non 2xx response.
+ */
 class HttpResponseException extends \Exception {
     /**
      * @var HttpResponse
