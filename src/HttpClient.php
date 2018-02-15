@@ -34,6 +34,11 @@ class HttpClient {
      */
     protected $throwExceptions = false;
 
+    /**
+     * @var callable Middleware that modifies requests and responses.
+     */
+    protected $middleware;
+
     /// Methods ///
 
     /**
@@ -44,6 +49,9 @@ class HttpClient {
     public function __construct(string $baseUrl = '') {
         $this->baseUrl = $baseUrl;
         $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
+        $this->middleware = function (HttpRequest $request): HttpResponse {
+            return $request->send();
+        };
     }
 
     /**
@@ -225,7 +233,8 @@ class HttpClient {
      */
     public function request(string $method, string $uri, $body, array $headers = [], array $options = []) {
         $request = $this->createRequest($method, $uri, $body, $headers, $options);
-        $response = $request->send();
+        // Call the chain of middleware on the request.
+        $response = call_user_func($this->middleware, $request);
 
         if (!$response->isResponseClass('2xx')) {
             $this->handleErrorResponse($response, $options);
@@ -264,7 +273,7 @@ class HttpClient {
      * @return mixed Returns the value of the default header.
      */
     public function getDefaultHeader(string $name, $default = null) {
-        return $this->val($name, $this->defaultHeaders, $default);
+        return $this->defaultHeaders[$name] ?? $default;
     }
 
     /**
@@ -361,6 +370,39 @@ class HttpClient {
      */
     public function setDefaultOptions(array $defaultOptions) {
         $this->defaultOptions = $defaultOptions;
+        return $this;
+    }
+
+    /**
+     * Add a middleware function to the client.
+     *
+     * A Middleware is a callable that has the following signature:
+     *
+     * ```php
+     * function middleware(HttpRequest $request, callable $next): HttpResponse {
+     *      // Optionally modify the request.
+     *      $request->setHeader('X-Foo', 'bar');
+     *
+     *      // Process the request by calling $next. You must always call next.
+     *      $response = $next($request);
+     *
+     *      // Optionally modify the response.
+     *      $response->setHeader('Access-Control-Allow-Origin', '*');
+     *
+     *      return $response;
+     * }
+     * ```
+     *
+     * @param callable $middleware The middleware callback to add.
+     * @return $this
+     */
+    public function addMiddleware(callable $middleware) {
+        $next = $this->middleware;
+
+        $this->middleware = function (HttpRequest $request) use ($middleware, $next): HttpResponse {
+            return $middleware($request, $next);
+        };
+
         return $this;
     }
 
