@@ -170,6 +170,7 @@ class HttpRequest extends HttpMessage {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifyPeer);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $this->verifyPeer ? 2 : 0);
         curl_setopt($ch, CURLOPT_ENCODING, ''); //"utf-8");
+        curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
 
         if (!empty($this->auth)) {
             curl_setopt($ch, CURLOPT_USERPWD, $this->auth[0].":".((empty($this->auth[1])) ? "" : $this->auth[1]));
