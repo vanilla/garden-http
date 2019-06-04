@@ -8,6 +8,13 @@
 			"email": "todd@vanillaforums.com"
 		}
 	],
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:vanilla/garden.git",
+			"no-api": true
+		}
+	],
 	"require": {
 		"php": ">=5.4.0",
 		"lib-curl": "*"
