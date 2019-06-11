@@ -48,7 +48,7 @@ class HttpClient {
      */
     public function __construct(string $baseUrl = '') {
         $this->baseUrl = $baseUrl;
-        $this->setDefaultHeader('User-Agent', 'garden-http/1.0.0 (HttpRequest)');
+        $this->setDefaultHeader('User-Agent', 'garden-http/2 (HttpRequest)');
         $this->middleware = function (HttpRequest $request): HttpResponse {
             return $request->send();
         };
