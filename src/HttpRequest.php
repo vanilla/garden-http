@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Todd Burry <todd@vanillaforums.com>
- * @copyright 2009-2018 Vanilla Forums Inc.
+ * @copyright 2009-2019 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -108,126 +108,14 @@ class HttpRequest extends HttpMessage {
      *
      * @return HttpResponse Returns the response from the API.
      */
-    public function send(): HttpResponse {
-        $ch = $this->createCurl();
-        $response = $this->execCurl($ch);
-        curl_close($ch);
+    public function send(HttpHandlerInterface $executor = null): HttpResponse {
+        if ($executor === null) {
+            $executor = new CurlHandler();
+        }
+
+        $response = $executor->send($this);
 
         return $response;
-    }
-
-    /**
-     * Create the cURL resource that represents this request.
-     *
-     * @return resource Returns the cURL resource.
-     * @see curl_init(), curl_setopt(), curl_exec()
-     */
-    protected function createCurl() {
-        $ch = curl_init();
-
-        // Add the body first so we can calculate a content length.
-        $body = '';
-        if ($this->method === self::METHOD_HEAD) {
-            curl_setopt($ch, CURLOPT_NOBODY, true);
-        } elseif ($this->method !== self::METHOD_GET) {
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $this->method);
-
-            $body = $this->makeCurlBody();
-            if ($body) {
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-            }
-        }
-
-        // Decode the headers.
-        $headers = [];
-        foreach ($this->getHeaders() as $key => $values) {
-            foreach ($values as $line) {
-                $headers[] = "$key: $line";
-            }
-        }
-
-        if (is_string($body) && !$this->hasHeader('Content-Length')) {
-            $headers[] = 'Content-Length: '.strlen($body);
-        }
-
-        if (!$this->hasHeader('Expect')) {
-            $headers[] = 'Expect:';
-        }
-
-        curl_setopt(
-            $ch,
-            CURLOPT_HTTP_VERSION,
-            $this->getProtocolVersion() == '1.0' ? CURL_HTTP_VERSION_1_0 : CURL_HTTP_VERSION_1_1
-        );
-
-        curl_setopt($ch, CURLOPT_URL, $this->url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->getTimeout());
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, $this->verifyPeer);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, $this->verifyPeer ? 2 : 0);
-        curl_setopt($ch, CURLOPT_ENCODING, ''); //"utf-8");
-        curl_setopt($ch, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);
-
-        if (!empty($this->auth)) {
-            curl_setopt($ch, CURLOPT_USERPWD, $this->auth[0].":".((empty($this->auth[1])) ? "" : $this->auth[1]));
-        }
-
-        return $ch;
-    }
-
-    /**
-     * Convert the request body into a format suitable to be passed to curl.
-     *
-     * @return string|array Returns the curl body.
-     */
-    protected function makeCurlBody() {
-        $body = $this->body;
-
-        if (is_string($body)) {
-            return (string)$body;
-        }
-
-        $contentType = $this->getHeader('Content-Type');
-        if (stripos($contentType, 'application/json') === 0) {
-            $body = json_encode($body);
-        }
-
-        return $body;
-    }
-
-    /**
-     * Execute a curl handle and return the response.
-     *
-     * @param resource $ch The curl handle to execute.
-     * @return HttpResponse Returns an {@link RestResponse} object with the information from the request
-     */
-    protected function execCurl($ch) {
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, true);
-        $response = curl_exec($ch);
-
-        // Split the full response into its headers and body
-        $info = curl_getinfo($ch);
-        $code = $info["http_code"];
-        if ($response) {
-            $header_size = $info["header_size"];
-            $rawHeaders = substr($response, 0, $header_size);
-            $status = null;
-            $rawBody = substr($response, $header_size);
-        } else {
-            $status = $code;
-            $rawHeaders = [];
-            $rawBody = curl_error($ch);
-        }
-
-        $result = new HttpResponse($status, $rawHeaders, $rawBody);
-        $result->setRequest($this);
-
-        return $result;
     }
 
     /**

@@ -10,7 +10,8 @@
 	],
 	"require": {
 		"php": ">=7.0.0",
-		"lib-curl": "*"
+		"ext-curl": "*",
+		"ext-json": "*"
 	},
 	"config": {
 		"platform": {
