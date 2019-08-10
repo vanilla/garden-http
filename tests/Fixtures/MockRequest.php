@@ -7,6 +7,7 @@
 
 namespace Garden\Http\Tests\Fixtures;
 
+use Garden\Http\HttpHandlerInterface;
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
 
@@ -19,7 +20,7 @@ class MockRequest extends HttpRequest {
      *
      * @return HttpResponse Returns an response.
      */
-    public function send(): HttpResponse {
+    public function send(HttpHandlerInterface $handler = null): HttpResponse {
         return static::echoRequest($this);
     }
 
