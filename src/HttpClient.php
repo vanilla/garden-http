@@ -39,18 +39,25 @@ class HttpClient {
      */
     protected $middleware;
 
+    /**
+     * @var HttpHandlerInterface The handler that will send the actual requests.
+     */
+    protected $handler;
+
     /// Methods ///
 
     /**
      * Initialize a new instance of the {@link HttpClient} class.
      *
      * @param string $baseUrl The base URL prefix of the API.
+     * @param HttpHandlerInterface The handler that will send the actual requests.
      */
-    public function __construct(string $baseUrl = '') {
+    public function __construct(string $baseUrl = '', HttpHandlerInterface $handler = null) {
         $this->baseUrl = $baseUrl;
+        $this->setHandler($handler === null ? new CurlHandler() : $handler);
         $this->setDefaultHeader('User-Agent', 'garden-http/2 (HttpRequest)');
         $this->middleware = function (HttpRequest $request): HttpResponse {
-            return $request->send();
+            return $request->send($this->getHandler());
         };
     }
 
@@ -403,6 +410,26 @@ class HttpClient {
             return $middleware($request, $next);
         };
 
+        return $this;
+    }
+
+    /**
+     * Get the HTTP handler that will send the actual requests.
+     *
+     * @return HttpHandlerInterface Returns the current handler.
+     */
+    public function getHandler(): HttpHandlerInterface {
+        return $this->handler;
+    }
+
+    /**
+     * Set the HTTP handler that will send the actual requests.
+     *
+     * @param HttpHandlerInterface $handler The new handler.
+     * @return $this
+     */
+    public function setHandler(HttpHandlerInterface $handler) {
+        $this->handler = $handler;
         return $this;
     }
 

@@ -82,13 +82,14 @@ to make an API client that is more convenient to reuse.
 
 ```PHP
 use Garden\Http\HttpClient;
+use Garden\Http\HttpHandlerInterface
 
 // A custom HTTP client to access the github API.
 class GithubClient extends HttpClient {
 
     // Set default options in your constructor.
-    public function __construct() {
-        parent::__construct('https://api.github.com');
+    public function __construct(HttpHandlerInterface $handler = null) {
+        parent::__construct('https://api.github.com', $handler);
         $this
             ->setDefaultHeader('Content-Type', 'application/json')
             ->setThrowExceptions(true);
@@ -197,6 +198,22 @@ class HmacMiddleware {
 ```
 
 This middleware calculates a new authorization header for each request and then adds it to the request. It then calls the `$next` closure to perform the rest of the request.
+
+## The HttpHandlerInterface
+
+In Garden HTTP, requests are executed with an HTTP handler. The currently included default handler executes requests with cURL. However, you can implement the the `HttpHandlerInterface` however you want and completely change the way requests are handled. The interface includes only one method:
+
+```php
+public function send(HttpRequest $request): HttpResponse;
+```
+
+The method is supposed to transform a request into a response. To use it, just pass an `HttpRequest` object to it.
+
+You can also use your custom handler with the `HttpClient`. Just pass it to the constructor:
+
+```json
+$api = new HttpClient('https://example.com', new CustomHandler());
+```
 
 ## Inspecting requests and responses
 
