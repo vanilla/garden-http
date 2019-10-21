@@ -52,10 +52,13 @@ class HttpClient {
      * @param string $baseUrl The base URL prefix of the API.
      * @param HttpHandlerInterface The handler that will send the actual requests.
      */
-    public function __construct(string $baseUrl = '', HttpHandlerInterface $handler = null) {
+    public function __construct(string $baseUrl = '', HttpHandlerInterface $handler = null, array $options = []) {
         $this->baseUrl = $baseUrl;
         $this->setHandler($handler === null ? new CurlHandler() : $handler);
         $this->setDefaultHeader('User-Agent', 'garden-http/2 (HttpRequest)');
+        foreach ($options as $name => $value) {
+            $this->setDefaultOption($name, $value);
+        }
         $this->middleware = function (HttpRequest $request): HttpResponse {
             return $request->send($this->getHandler());
         };
@@ -239,6 +242,7 @@ class HttpClient {
      * @return HttpResponse Returns the {@link HttpResponse} object from the call.
      */
     public function request(string $method, string $uri, $body, array $headers = [], array $options = []) {
+        $options += $this->defaultOptions;
         $request = $this->createRequest($method, $uri, $body, $headers, $options);
         // Call the chain of middleware on the request.
         $response = call_user_func($this->middleware, $request);
