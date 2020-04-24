@@ -81,6 +81,7 @@ class HttpRequest extends HttpMessage {
         $this->setProtocolVersion($options['protocolVersion']);
         $this->setAuth($options['auth']);
         $this->setVerifyPeer($options['verifyPeer']);
+        $this->setTimeout($options['timeout']);
     }
 
     /**
