@@ -398,4 +398,12 @@ EOT;
 
         $this->assertSame($request, $response->getRequest());
     }
+
+    /**
+     * A basic smoke test for `HttpResponse::reasonPhrase()`.
+     */
+    public function testReasonPhrase(): void {
+        $this->assertSame('OK', HttpResponse::reasonPhrase(200));
+        $this->assertNull(HttpResponse::reasonPhrase(4234324));
+    }
 }
