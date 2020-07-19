@@ -9,13 +9,13 @@
 		}
 	],
 	"require": {
-		"php": ">=7.0.0",
+		"php": ">=7.1",
 		"ext-curl": "*",
 		"ext-json": "*"
 	},
 	"config": {
 		"platform": {
-			"php": "7.0.26"
+			"php": "7.1"
 		}
 	},
 	"require-dev": {

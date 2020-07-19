@@ -307,6 +307,16 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     }
 
     /**
+     * Get the reason phrase for a status.
+     *
+     * @param int $status The status to test.
+     * @return string|null Returns a reason phrase or null for an invalid status.
+     */
+    public static function reasonPhrase(int $status): ?string {
+        return self::$reasonPhrases[$status] ?? null;
+    }
+
+    /**
      * Parse the status line from a header string or array.
      *
      * @param string|array $headers Either a header string or a header array.
