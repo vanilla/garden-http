@@ -188,4 +188,13 @@ class CurlHandler implements HttpHandlerInterface {
 
         return $response;
     }
+
+    /**
+     * Destroy any existing cURL handlers when the object is destroy
+     */
+    public function __destruct() {
+        if ($this->curl) {
+            curl_close($this->curl);
+        }
+    }
 }
