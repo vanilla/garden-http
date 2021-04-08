@@ -10,6 +10,11 @@ dist: xenial
 
 sudo: false
 
+env:
+    global:
+        # https://travis-ci.community/t/xdebug-3-is-installed-by-default-breaking-builds/10748
+        - XDEBUG_MODE=coverage
+
 matrix:
     allow_failures:
         - php: nightly
