@@ -228,7 +228,7 @@ class HttpClientTest extends TestCase {
 
         $this->assertNotEquals(
             $this->getClientPort($api, ['Connection' => 'keep-alive']),
-            $this->getClientPort($api),
+            $this->getClientPort($api)
         );
     }
 
@@ -241,7 +241,7 @@ class HttpClientTest extends TestCase {
 
         $this->assertNotEquals(
             $this->getClientPort($api, ['Connection' => 'keep-alive']),
-            $this->getClientPort($api, ['Connection' => 'close']),
+            $this->getClientPort($api, ['Connection' => 'close'])
         );
     }
 
