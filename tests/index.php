@@ -33,7 +33,8 @@ namespace Garden {
             'headers' => $request->getHeaders(),
             'query' => $request->getQuery(),
             'body' => $request->getInput(),
-            'foo' => 'bar'
+            'foo' => 'bar',
+            'phpServer' => $_SERVER
         ];
 
         return $result;

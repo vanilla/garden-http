@@ -12,6 +12,29 @@ namespace Garden\Http;
  */
 class CurlHandler implements HttpHandlerInterface {
     /**
+     * @var resource|\CurlHandle cURL handle to be (re)used
+     */
+    protected $curl = null;
+
+    /**
+     * Gets a cURL resource for this request
+     *
+     * @param HttpRequest $request
+     * @return resource cURL handle
+     */
+    protected function getCurlHandle(HttpRequest $request) {
+        if ($this->curl === null) {
+            $this->curl = curl_init();
+        } elseif (!$request->hasHeader('connection') || strcasecmp($request->getHeader('connection'), 'close') === 0) {
+            // we have a reusable curl instance, but this request doesn't want to be shared. Close it and make a new one
+            curl_close($this->curl);
+            $this->curl = curl_init();
+        }
+
+        return $this->curl;
+    }
+
+    /**
      * Create the cURL resource that represents this request.
      *
      * @param HttpRequest $request The request to create the cURL resource for.
@@ -19,7 +42,7 @@ class CurlHandler implements HttpHandlerInterface {
      * @see curl_init(), curl_setopt(), curl_exec()
      */
     protected function createCurl(HttpRequest $request) {
-        $ch = curl_init();
+        $ch = $this->getCurlHandle($request);
 
         // Add the body first so we can calculate a content length.
         $body = '';
@@ -113,6 +136,17 @@ class CurlHandler implements HttpHandlerInterface {
     }
 
     /**
+     * Closes the cURL handle.
+     */
+    public function closeConnection() {
+        if ($this->curl) {
+            curl_close($this->curl);
+        }
+
+        $this->curl = null;
+    }
+
+    /**
      * Decode a curl response and turn it into
      *
      * @param $ch
@@ -146,9 +180,24 @@ class CurlHandler implements HttpHandlerInterface {
         $ch = $this->createCurl($request);
         $curlResponse = $this->execCurl($ch);
         $response = $this->decodeCurlResponse($ch, $curlResponse);
-        curl_close($ch);
         $response->setRequest($request);
 
+        if (!$request->hasHeader('connection')
+            || strcasecmp($request->getHeader('connection'), 'close') === 0
+            || strcasecmp($response->getHeader('connection'), 'close') === 0
+        ) {
+            $this->closeConnection();
+        }
+
         return $response;
+    }
+
+    /**
+     * Destroy any existing cURL handlers when the object is destroyed
+     */
+    public function __destruct() {
+        if ($this->curl) {
+            curl_close($this->curl);
+        }
     }
 }
