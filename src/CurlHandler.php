@@ -12,7 +12,7 @@ namespace Garden\Http;
  */
 class CurlHandler implements HttpHandlerInterface {
     /**
-     * @var curl handle to be (re)used
+     * @var resource|\CurlHandle cURL handle to be (re)used
      */
     protected $curl = null;
 
@@ -138,8 +138,11 @@ class CurlHandler implements HttpHandlerInterface {
     /**
      * Closes the cURL handle.
      */
-    protected function closeCurl() {
-        curl_close($this->curl);
+    public function closeConnection() {
+        if ($this->curl) {
+            curl_close($this->curl);
+        }
+
         $this->curl = null;
     }
 
@@ -183,14 +186,14 @@ class CurlHandler implements HttpHandlerInterface {
             || strcasecmp($request->getHeader('connection'), 'close') === 0
             || strcasecmp($response->getHeader('connection'), 'close') === 0
         ) {
-            $this->closeCurl();
+            $this->closeConnection();
         }
 
         return $response;
     }
 
     /**
-     * Destroy any existing cURL handlers when the object is destroy
+     * Destroy any existing cURL handlers when the object is destroyed
      */
     public function __destruct() {
         if ($this->curl) {
