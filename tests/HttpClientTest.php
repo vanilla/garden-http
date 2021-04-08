@@ -194,4 +194,68 @@ class HttpClientTest extends TestCase {
 
         return $arr;
     }
+
+    /**
+     * Tests the default behavior where a cURL handle should not be reused between requests by default
+     */
+    public function testConnectionIsNotReusedByDefault() {
+        $api = $this->getApi();
+
+        $this->assertNotEquals(
+            $this->getClientPort($api),
+            $this->getClientPort($api)
+        );
+    }
+
+    /**
+     * Tests that when Keep-Alive is requested through header, the cURL handle is being reused
+     */
+    public function testConnectionIsReusedWhenKeepAliveRequested() {
+        $api = $this->getApi();
+        $headers = ['Connection' => 'keep-alive'];
+
+        $this->assertEquals(
+            $this->getClientPort($api, $headers),
+            $this->getClientPort($api, $headers)
+        );
+    }
+
+    /**
+     * Tests that when Keep-Alive is used, if a subsequent request doesn't request it, then the connection is reset
+     */
+    public function testConnectionIsReusedCorrectlyInMixedRequestsWithNoExplicitHeader() {
+        $api = $this->getApi();
+
+        $this->assertNotEquals(
+            $this->getClientPort($api, ['Connection' => 'keep-alive']),
+            $this->getClientPort($api),
+        );
+    }
+
+    /**
+     * Tests that when Keep-Alive is used, if a subsequent request explicitly requests to close the connection, then
+     * the connection is reset
+     */
+    public function testConnectionIsReusedCorrectlyInMixedRequestsWithExplicitClose() {
+        $api = $this->getApi();
+
+        $this->assertNotEquals(
+            $this->getClientPort($api, ['Connection' => 'keep-alive']),
+            $this->getClientPort($api, ['Connection' => 'close']),
+        );
+    }
+
+    /**
+     * Checks with the echo server what connecting port we have used. This is used to figure out whether the connection
+     * has been reused or not.
+     *
+     * @param HttpClient $client the HTTP client to run the request with
+     * @param array $headers additional headers to add to the request
+     * @return string of the port number as reported by nginx
+     */
+    protected function getClientPort(HttpClient $client, array $headers = []) {
+        $response = $client->request('GET', 'echo.json', null, $headers);
+        $body = $response->getBody();
+        return $body['phpServer']['X_CLIENT_PORT'];
+    }
 }
