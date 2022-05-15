@@ -39,11 +39,17 @@ class MockHttpClient extends HttpClient {
      * @param string $uri
      * @param HttpResponse $response
      * @param string $method
+     * @param string|null $bodyRequest
      *
      * @return $this
      */
-    public function addMockResponse(string $uri, HttpResponse $response, string $method = HttpRequest::METHOD_GET) {
-        $this->mockHandler->addMockResponse($uri, $response, $method);
+    public function addMockResponse(
+        string $uri,
+        HttpResponse $response,
+        string $method = HttpRequest::METHOD_GET,
+        ?string $bodyRequest = null)
+    {
+        $this->mockHandler->addMockResponse($uri, $response, $method, $bodyRequest);
         return $this;
     }
 }
