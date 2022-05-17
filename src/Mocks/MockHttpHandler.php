@@ -16,11 +16,13 @@ use Garden\Http\HttpResponse;
  */
 class MockHttpHandler implements HttpHandlerInterface {
 
-    use MockHttpResponseTrait;
+    use MockHttpRequestTrait;
 
+    /**
+     * @inheritDoc
+     */
     public function send(HttpRequest $request): HttpResponse {
-        $key = $this->makeMockResponseKey($request->getUrl(), $request->getMethod(), $request->getBody());
-        $response = $this->mockedResponses[$key] ?? new HttpResponse(404);
+        $response = $this->dispatchMockRequest($request);
         $response->setRequest($request);
         return $response;
     }

@@ -61,13 +61,9 @@ class MockHttpClientTest extends TestCase {
         $result = $client->get('/not-mocked');
         $this->assertEquals(404, $result->getStatusCode());
 
-        $result = $client->get('/mock-endpoint');
-        $this->assertEquals(404, $result->getStatusCode(), 'Query params must match');
-
         $result = $client->delete('/mock-endpoint?query=param');
         $this->assertEquals(404, $result->getStatusCode(), 'Http method must match');
     }
-
 
     /**
      * Test that non-matching requests go to not found.
@@ -90,11 +86,37 @@ class MockHttpClientTest extends TestCase {
             $request->addHeader('request-header', 'foo');
             $response = $next($request);
             $response->addHeader('response-header', 'bar');
+
             return $response;
         });
 
         $response = $client->get('/not-mocked');
         $this->assertEquals('bar', $response->getHeader('response-header'));
         $this->assertEquals('foo', $response->getRequest()->getHeader('request-header'));
+    }
+
+    /**
+     * Test score rankings with multiple similar requests.
+     */
+    public function testMatchingScore() {
+        $client = new MockHttpClient();
+        $client->addMockRequest(
+            new HttpRequest("GET", "/mock-endpoint"),
+            new HttpResponse(200, ['header' => 'value'], 'just url')
+        );
+        $client->addMockRequest(
+            new HttpRequest("GET", "/mock-endpoint?queryParam=foo"),
+            new HttpResponse(200, ['header' => 'value'], 'with query')
+        );
+        $client->addMockRequest(
+            new HttpRequest("POST", "/mock-endpoint?queryParam=foo", ['bodyParam' => 'foo']),
+            new HttpResponse(200, ['header' => 'value'], 'with query and body')
+        );
+
+        $this->assertEquals("just url", $client->get("/mock-endpoint")->getBody());
+        $this->assertEquals("with query", $client->get("/mock-endpoint?queryParam=foo")->getBody());
+        $this->assertEquals("just url", $client->get("/mock-endpoint?queryParam=bar")->getBody());
+        $this->assertEquals(404, $client->get("/other-endpoint?queryParam=bar")->getStatusCode());
+        $this->assertEquals("with query and body", $client->post("/mock-endpoint?queryParam=foo", ["bodyParam" => "foo"])->getBody());
     }
 }

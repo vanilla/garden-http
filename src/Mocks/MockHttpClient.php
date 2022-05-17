@@ -16,13 +16,8 @@ use Garden\Http\HttpResponse;
  */
 class MockHttpClient extends HttpClient {
 
-    use MockHttpResponseTrait;
-
     /** @var MockHttpHandler */
     private $mockHandler;
-
-    /** @var HttpResponse */
-    private $currentResponse;
 
     /**
      * @inheritdoc
@@ -34,22 +29,31 @@ class MockHttpClient extends HttpClient {
     }
 
     /**
+     * @param HttpRequest $request
+     * @param HttpResponse $response
+     * @return $this
+     */
+    public function addMockRequest(HttpRequest $request, HttpResponse $response) {
+        $this->mockHandler->addMockRequest($request, $response);
+        return $this;
+    }
+
+    /**
      * Add a single response to be queued up if a request is created.
      *
      * @param string $uri
      * @param HttpResponse $response
      * @param string $method
-     * @param string|null $bodyRequest
      *
      * @return $this
+     * @deprecated Use addMockRequest()
      */
     public function addMockResponse(
         string $uri,
         HttpResponse $response,
-        string $method = HttpRequest::METHOD_GET,
-        ?string $bodyRequest = null
+        string $method = HttpRequest::METHOD_GET
     ) {
-        $this->mockHandler->addMockResponse($uri, $response, $method, $bodyRequest);
+        $this->mockHandler->addMockResponse($uri, $response, $method);
         return $this;
     }
 }
