@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Adam Charron <adam.c@vanillaforums.com>
- * @copyright 2009-2019 Vanilla Forums Inc.
+ * @copyright 2009-2022 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -21,6 +21,7 @@ trait MockHttpResponseTrait {
      *
      * @param string $uri
      * @param string $method
+     * @param $body
      *
      * @return string
      */
@@ -45,7 +46,7 @@ trait MockHttpResponseTrait {
         string $uri,
         HttpResponse $response,
         string $method = HttpRequest::METHOD_GET,
-        ?string $bodyRequest = null
+        $bodyRequest = null
     ) {
         $key = $this->makeMockResponseKey($uri, $method, $bodyRequest);
         $this->mockedResponses[$key] = $response;

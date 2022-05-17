@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Adam Charron <adam.c@vanillaforums.com>
- * @copyright 2009-2019 Vanilla Forums Inc.
+ * @copyright 2009-2022 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -19,7 +19,7 @@ class MockHttpHandler implements HttpHandlerInterface {
     use MockHttpResponseTrait;
 
     public function send(HttpRequest $request): HttpResponse {
-        $key = $this->makeMockResponseKey($request->getUrl(), $request->getMethod());
+        $key = $this->makeMockResponseKey($request->getUrl(), $request->getMethod(), $request->getBody());
         $response = $this->mockedResponses[$key] ?? new HttpResponse(404);
         $response->setRequest($request);
         return $response;

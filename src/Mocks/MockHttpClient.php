@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Adam Charron <adam.c@vanillaforums.com>
- * @copyright 2009-2019 Vanilla Forums Inc.
+ * @copyright 2009-2022 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -47,8 +47,8 @@ class MockHttpClient extends HttpClient {
         string $uri,
         HttpResponse $response,
         string $method = HttpRequest::METHOD_GET,
-        ?string $bodyRequest = null)
-    {
+        ?string $bodyRequest = null
+    ) {
         $this->mockHandler->addMockResponse($uri, $response, $method, $bodyRequest);
         return $this;
     }

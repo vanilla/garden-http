@@ -1,13 +1,12 @@
 <?php
 /**
  * @author Adam Charron <adam.c@vanillaforums.com>
- * @copyright 2009-2019 Vanilla Forums Inc.
+ * @copyright 2009-2022 Vanilla Forums Inc.
  * @license MIT
  */
 
 namespace Garden\Http\Tests\Mocks;
 
-use Garden\Exception\NotFoundException;
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
 use Garden\Http\HttpResponseException;
@@ -31,6 +30,23 @@ class MockHttpClientTest extends TestCase {
 
         $client->addMockResponse('/mock-endpoint?query=param', $mockedResponse, HttpRequest::METHOD_DELETE);
         $result = $client->delete('/mock-endpoint', ['query' => 'param']);
+        $this->assertEquals($mockedResponse, $result);
+    }
+
+    /**
+     * Test `POST` mock responses.
+     */
+    public function testPostMockedResponseWithBodyRequest() {
+        $bodyRequest = serialize(['partOne' => 1, 'partTwo' => 2]);
+        $desiredResponseValue = "That's what I want back.";
+
+        $client = new MockHttpClient();
+        $mockedResponse = new HttpResponse(200, ['header' => 'value'], $desiredResponseValue);
+        $client->addMockResponse('/mock-endpoint?query=param', $mockedResponse, HttpRequest::METHOD_POST, $bodyRequest);
+        $result = $client->post('/mock-endpoint?query=param', $bodyRequest);
+        $actualResponseValue = $result->getRawBody();
+
+        $this->assertEquals($desiredResponseValue, $actualResponseValue);
         $this->assertEquals($mockedResponse, $result);
     }
 
