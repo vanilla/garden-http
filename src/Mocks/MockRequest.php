@@ -58,7 +58,7 @@ class MockRequest {
         }
 
         if ($incomingUrlParts['path'] !== $ownUrlParts['path']) {
-            // Wrong patch. No match.
+            // Wrong path. No match.
             $this->setScore(0);
             return false;
         }

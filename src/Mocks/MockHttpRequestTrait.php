@@ -19,6 +19,8 @@ trait MockHttpRequestTrait {
     protected $mockRequests = [];
 
     /**
+     * Return the best matching response, if any.
+     *
      * @param HttpRequest $request
      * @return HttpResponse
      */
@@ -44,6 +46,8 @@ trait MockHttpRequestTrait {
     }
 
     /**
+     * Add a mocked request/response combo.
+     *
      * @param HttpRequest $request
      * @param HttpResponse $response
      * @return $this

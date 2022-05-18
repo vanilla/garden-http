@@ -29,8 +29,11 @@ class MockHttpClient extends HttpClient {
     }
 
     /**
+     * Add a mocked request/response combo.
+     *
      * @param HttpRequest $request
      * @param HttpResponse $response
+     *
      * @return $this
      */
     public function addMockRequest(HttpRequest $request, HttpResponse $response) {
