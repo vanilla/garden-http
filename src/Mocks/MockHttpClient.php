@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Adam Charron <adam.c@vanillaforums.com>
- * @copyright 2009-2019 Vanilla Forums Inc.
+ * @copyright 2009-2022 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -16,13 +16,8 @@ use Garden\Http\HttpResponse;
  */
 class MockHttpClient extends HttpClient {
 
-    use MockHttpResponseTrait;
-
     /** @var MockHttpHandler */
     private $mockHandler;
-
-    /** @var HttpResponse */
-    private $currentResponse;
 
     /**
      * @inheritdoc
@@ -34,6 +29,19 @@ class MockHttpClient extends HttpClient {
     }
 
     /**
+     * Add a mocked request/response combo.
+     *
+     * @param HttpRequest $request
+     * @param HttpResponse $response
+     *
+     * @return $this
+     */
+    public function addMockRequest(HttpRequest $request, HttpResponse $response) {
+        $this->mockHandler->addMockRequest($request, $response);
+        return $this;
+    }
+
+    /**
      * Add a single response to be queued up if a request is created.
      *
      * @param string $uri
@@ -41,8 +49,13 @@ class MockHttpClient extends HttpClient {
      * @param string $method
      *
      * @return $this
+     * @deprecated Use addMockRequest()
      */
-    public function addMockResponse(string $uri, HttpResponse $response, string $method = HttpRequest::METHOD_GET) {
+    public function addMockResponse(
+        string $uri,
+        HttpResponse $response,
+        string $method = HttpRequest::METHOD_GET
+    ) {
         $this->mockHandler->addMockResponse($uri, $response, $method);
         return $this;
     }

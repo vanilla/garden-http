@@ -1,7 +1,7 @@
 <?php
 /**
  * @author Adam Charron <adam.c@vanillaforums.com>
- * @copyright 2009-2019 Vanilla Forums Inc.
+ * @copyright 2009-2022 Vanilla Forums Inc.
  * @license MIT
  */
 
@@ -16,11 +16,13 @@ use Garden\Http\HttpResponse;
  */
 class MockHttpHandler implements HttpHandlerInterface {
 
-    use MockHttpResponseTrait;
+    use MockHttpRequestTrait;
 
+    /**
+     * @inheritDoc
+     */
     public function send(HttpRequest $request): HttpResponse {
-        $key = $this->makeMockResponseKey($request->getUrl(), $request->getMethod());
-        $response = $this->mockedResponses[$key] ?? new HttpResponse(404);
+        $response = $this->dispatchMockRequest($request);
         $response->setRequest($request);
         return $response;
     }
