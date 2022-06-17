@@ -57,7 +57,7 @@ class MockRequest {
             return false;
         }
 
-        if ($incomingUrlParts['path'] !== $ownUrlParts['path']) {
+        if (isset($incomingUrlParts['path']) && ($incomingUrlParts['path'] !== $ownUrlParts['path'])) {
             // Wrong path. No match.
             $this->setScore(0);
             return false;
