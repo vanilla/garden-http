@@ -133,8 +133,13 @@ class HttpMessageTest extends TestCase {
             "X-Content-Encoding" => "null"
         ];
 
+        $carriage = "\r";
         // Make a header string.
-        $headerString = implode_assoc("\r\n", ": ", $headers);
+        $headerString = <<<HEADERS
+X-Cache-Control: no-cache{$carriage}
+X-Content-Type: something/something{$carriage}
+X-Content-Encoding: null
+HEADERS;
 
         $msg = new HttpRequest();
         $msg->setHeaders($headerString);
