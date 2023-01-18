@@ -1,5 +1,6 @@
 # Garden HTTP
 
+[![CI Tests](https://github.com/vanilla/garden-http/actions/workflows/ci.yml/badge.svg)](https://github.com/vanilla/garden-http/actions/workflows/ci.yml)
 [![Packagist Version](https://img.shields.io/packagist/v/vanilla/garden-http.svg?style=flat)](https://packagist.org/packages/vanilla/garden-http)
 [![CLA](https://cla-assistant.io/readme/badge/vanilla/garden-http)](https://cla-assistant.io/vanilla/garden-http)
 
