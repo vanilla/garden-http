@@ -78,16 +78,4 @@ $app->get("/basic-protected/{user}/{password}", function (ServerRequest $request
     return $response->withJson(["message" => "You are in."]);
 });
 
-//$app->route('/basic-protected/{username}/{password}', function ($username = '', $password = '') use ($app) {
-//    $request = $app->request;
-//
-//    if ($request->getEnv('PHP_AUTH_USER') !== $username) {
-//        throw new ClientException('Invalid username.', 401, ['HTTP_WWW-Authenticate' => 'Basic realm="tests"']);
-//    } elseif ($request->getEnv('PHP_AUTH_PW') !== $password) {
-//        throw new ClientException('Invalid password.', 401, ['HTTP_WWW-Authenticate' => 'Basic realm="tests"']);
-//    } else {
-//        return ['message' => 'You are in.'];
-//    }
-//});
-
 $app->run();
