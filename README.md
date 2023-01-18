@@ -1,7 +1,6 @@
 # Garden HTTP
 
-[![Build Status](https://img.shields.io/travis/vanilla/garden-http.svg?style=flat)](https://travis-ci.org/vanilla/garden-http)
-[![Coverage](http://img.shields.io/scrutinizer/coverage/g/vanilla/garden-http.svg?style=flat)](https://scrutinizer-ci.com/g/vanilla/garden-http/)
+[![CI Tests](https://github.com/vanilla/garden-http/actions/workflows/ci.yml/badge.svg)](https://github.com/vanilla/garden-http/actions/workflows/ci.yml)
 [![Packagist Version](https://img.shields.io/packagist/v/vanilla/garden-http.svg?style=flat)](https://packagist.org/packages/vanilla/garden-http)
 [![CLA](https://cla-assistant.io/readme/badge/vanilla/garden-http)](https://cla-assistant.io/vanilla/garden-http)
 

@@ -8,6 +8,7 @@
 namespace Garden\Http\Tests;
 
 use Garden\Http\HttpClient;
+use Garden\Http\HttpResponseException;
 use Garden\Http\Tests\Fixtures\HmacMiddleware;
 use PHPUnit\Framework\TestCase;
 
@@ -34,15 +35,16 @@ class ReadmeTest extends TestCase {
         if (!$response->isSuccessful()) {
             $this->markTestSkipped();
         }
-        $this->assertInternalType('array', $data);
+        $this->assertIsArray($data);
         $this->assertSame(['foo' => 'bar'], $posted);
     }
 
     /**
-     * @expectedException \Exception
-     * @expectedExceptionCode 404
+     * Test that exceptions can be thrown.
      */
     public function testExceptionsExample() {
+        $this->expectException(HttpResponseException::class);
+        $this->expectExceptionCode(404);
         $api = new HttpClient('https://httpbin.org');
         $api->setThrowExceptions(true);
 
