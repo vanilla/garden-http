@@ -11,7 +11,7 @@ namespace Garden\Http;
 /**
  * Representation of an outgoing, server-side response.
  */
-class HttpResponse extends HttpMessage implements \ArrayAccess {
+class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializable {
     /// Properties ///
 
     /**
@@ -432,5 +432,50 @@ class HttpResponse extends HttpMessage implements \ArrayAccess {
     public function setRequest(HttpRequest $request = null) {
         $this->request = $request;
         return $this;
+    }
+
+    /**
+     * Convert the response into an exception.
+     *
+     * @return HttpResponseException
+     */
+    public function asException(): HttpResponseException {
+        $request = $this->getRequest();
+        if ($request !== null) {
+            $requestID = "Request {$request->getMethod()} {$request->getUrl()}";
+        } else {
+            $requestID = "Unknown request";
+        }
+
+        if ($this->isSuccessful()) {
+            $responseAction = "returned a response code of {$this->getStatusCode()}";
+        } else {
+            $responseAction = "failed with a response code of {$this->getStatusCode()}";
+        }
+
+        $body = $this->getBody();
+        if (is_array($body) && isset($body['message']) && is_string($body['message'])) {
+            $responseMessage = "and a custom message of {$body['message']}";
+        } else {
+            $responseMessage = "and a standard message of {$this->getReasonPhrase()}";
+        }
+
+        $message = implode(" ", [$requestID, $responseAction, $responseMessage]);
+
+        return new HttpResponseException($this, $message);
+    }
+
+    /**
+     * Basic JSON implementation.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array {
+        return [
+            "statusCode" => $this->getStatusCode(),
+            "content-type" => $this->getHeader("content-type") ?: null,
+            "request" => $this->getRequest(),
+            "body" => $this->getRawBody(),
+        ];
     }
 }

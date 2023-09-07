@@ -8,10 +8,12 @@
 
 namespace Garden\Http;
 
+use Garden\Utils\ContextException;
+
 /**
  * An exception that occurs when there is a non 2xx response.
  */
-class HttpResponseException extends \Exception {
+class HttpResponseException extends ContextException {
     /**
      * @var HttpResponse
      */
@@ -24,7 +26,13 @@ class HttpResponseException extends \Exception {
      * @param string $message The error message.
      */
     public function __construct(HttpResponse $response, $message = "") {
-        parent::__construct($message, $response->getStatusCode(), null);
+        $responseJson = $response->jsonSerialize();
+        unset($responseJson['request']);
+        $context = [
+            "response" => $response,
+            "request" => $response->getRequest(),
+        ];
+        parent::__construct($message, $response->getStatusCode(), $context);
         $this->response = $response;
     }
 

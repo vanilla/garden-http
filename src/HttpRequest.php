@@ -11,7 +11,7 @@ namespace Garden\Http;
 /**
  * Representation of an outgoing, client-side request.
  */
-class HttpRequest extends HttpMessage {
+class HttpRequest extends HttpMessage implements \JsonSerializable {
     /// Constants ///
 
     const METHOD_DELETE = 'DELETE';
@@ -215,6 +215,18 @@ class HttpRequest extends HttpMessage {
             'auth' => $this->getAuth(),
             'timeout' => $this->getTimeout(),
             'verifyPeer' => $this->getVerifyPeer()
+        ];
+    }
+
+    /**
+     * Basic JSON implementation.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array {
+        return [
+            "url" => $this->getUrl(),
+            "method" => $this->getMethod(),
         ];
     }
 }

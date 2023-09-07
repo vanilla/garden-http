@@ -150,13 +150,7 @@ class HttpClient {
      */
     public function handleErrorResponse(HttpResponse $response, $options = []) {
         if ($options['throw'] ?? $this->throwExceptions) {
-            $body = $response->getBody();
-            if (is_array($body)) {
-                $message = $body['message'] ?? $response->getReasonPhrase();
-            } else {
-                $message = $response->getReasonPhrase();
-            }
-            throw new HttpResponseException($response, $message);
+            throw $response->asException();
         }
     }
 
