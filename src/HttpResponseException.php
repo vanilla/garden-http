@@ -9,11 +9,12 @@
 namespace Garden\Http;
 
 use Garden\Utils\ContextException;
+use Monolog\Utils;
 
 /**
  * An exception that occurs when there is a non 2xx response.
  */
-class HttpResponseException extends ContextException {
+class HttpResponseException extends ContextException implements \JsonSerializable {
     /**
      * @var HttpResponse
      */
@@ -29,8 +30,8 @@ class HttpResponseException extends ContextException {
         $responseJson = $response->jsonSerialize();
         unset($responseJson['request']);
         $context = [
-            "response" => $response,
-            "request" => $response->getRequest(),
+            "response" => $responseJson,
+            "request" => $response->getRequest()->jsonSerialize(),
         ];
         parent::__construct($message, $response->getStatusCode(), $context);
         $this->response = $response;
@@ -54,5 +55,18 @@ class HttpResponseException extends ContextException {
      */
     public function getResponse(): HttpResponse {
         return $this->response;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array {
+        $result = [
+            'message' => $this->getMessage(),
+            'status' => (int) $this->getHttpStatusCode(),
+            'class' => get_class($this),
+            'code' => (int) $this->getCode(),
+        ] + $this->getContext();
+        return $result;
     }
 }

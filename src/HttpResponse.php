@@ -455,9 +455,9 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
 
         $body = $this->getBody();
         if (is_array($body) && isset($body['message']) && is_string($body['message'])) {
-            $responseMessage = "and a custom message of {$body['message']}";
+            $responseMessage = "and a custom message of \"{$body['message']}\"";
         } else {
-            $responseMessage = "and a standard message of {$this->getReasonPhrase()}";
+            $responseMessage = "and a standard message of \"{$this->getReasonPhrase()}\"";
         }
 
         $message = implode(" ", [$requestID, $responseAction, $responseMessage]);
