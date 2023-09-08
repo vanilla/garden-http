@@ -298,7 +298,7 @@ HEADERS;
      * Test requesting to an host that doesn't resolve.
      */
     public function testUnresolvedUrl() {
-        $request = new HttpRequest("GET", "http://foo.foo");
+        $request = new HttpRequest("GET", "http://foo.example");
         $request->setTimeout(1);
         $response = $request->send();
 
