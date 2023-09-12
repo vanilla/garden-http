@@ -11,9 +11,11 @@ that you use regularly.
 
 ## Installation
 
-*Garden HTTP requires PHP 7.0 or higher and libcurl*
+*Garden HTTP requires PHP 7.4 or higher and libcurl*
 
 Garden HTTP is [PSR-4](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader.md) compliant and can be installed using [composer](//getcomposer.org). Just add `vanilla/garden-http` to your composer.json.
+
+Garden request and response objects are [PSR-7](https://www.php-fig.org/psr/psr-7/) compliant as well.
 
 ## Basic Example
 
@@ -54,6 +56,42 @@ try {
 } catch (\Exception $ex) {
     $code = $ex->getCode(); // should be 404
     throw $ex;
+}
+
+// If you don't want a specific request to throw.
+$response = $api->get("/status/500", [], [], ["throw" => false]);
+// But you could throw it yourself.
+if (!$response->isSuccessful()) {
+    throw $response->asException();
+}
+```
+
+Exceptions will be thrown with a message indicating the failing response and structured data as well.
+
+```php
+try {
+    $response = new HttpResponse(501, ["content-type" => "application/json"], '{"message":"Some error occured."}');
+    throw $response->asException();
+    // Make an exception
+} catch (\Garden\Http\HttpResponseException $ex) {
+    // Request POST /some/path failed with a response code of 501 and a custom message of "Some error occured."
+    $ex->getMessage();
+    
+    // [
+    //      "request" => [
+    //          'url' => '/some/path',
+    //          'method' => 'POST',
+    //      ],
+    //      "response" => [
+    //          'statusCode' => 501,
+    //          'content-type' => 'application/json',
+    //          'body' => '{"message":"Some error occured."}',
+    //      ]
+    // ]
+    $ex->getContext();
+    
+    // It's serializable too.
+    json_encode($ex);
 }
 ```
 
@@ -216,7 +254,129 @@ $api = new HttpClient('https://example.com', new CustomHandler());
 
 ## Inspecting requests and responses
 
-Sometimes when you get a response you want to know what request generated it. The `HttpResponse` class has an `getRequest()` method for this.
+Sometimes when you get a response you want to know what request generated it. The `HttpResponse` class has an `getRequest()` method for this. The `HttpRequest` class has a `getResponse()` method for the inverse.
 
 Exceptions that are thrown from `HttpClient` objects are instances of the `HttpResponseException` class. That class has `getRequest()` and `getResponse()` methods so that you can inspect both the request and the response for the exception. This exception is of particular use since request objects are created inside the client and not by the programmer directly.
 
+## Mocking for Tests
+
+An `HttpHandlerInterface` implementation and utilities are provided for mocking requests and responses.
+
+### Setup
+
+```php
+use Garden\Http\HttpClient
+use Garden\Http\Mocks\MockHttpHandler;
+
+// Manually apply the handler.
+$httpClient = new HttpClient();
+$mockHandler = new MockHttpHandler();
+$httpClient->setHandler($mockHandler);
+
+// Automatically apply a handler to `HttpClient` instances.
+// You can call this again later to retrieve the same handler.
+$mockHandler = MockHttpHandler::mock();
+
+// Don't forget this in your phpunit `teardown()`
+MockHttpHandler::clearMock();;
+
+// Reset the handler instance
+$mockHandler->reset();
+```
+
+### Mocking Requests
+
+```php
+use Garden\Http\Mocks\MockHttpHandler;
+use Garden\Http\Mocks\MockResponse;
+
+// By default this will return 404 for all requests.
+$mockHttp = MockHttpHandler::mock();
+
+$mockHttp
+    // Explicit request and response
+    ->addMockRequest(
+        new \Garden\Http\HttpRequest("GET", "https://domain.com/some/url"),
+        new \Garden\Http\HttpResponse(200, ["content-type" => "application/json"], '{"json": "here"}'),
+    )
+    // Shorthand
+    ->addMockRequest(
+        "GET https://domain.com/some/url",
+        MockResponse::json(["json" => "here"])
+    )
+    // Even shorter-hand
+    // Mocking 200 JSON responses to GET requests is very easy.
+    ->addMockRequest(
+        "https://domain.com/some/url",
+        ["json" => "here"]
+    )
+    
+    // Wildcards
+    // Wildcards match with lower priority than explicitly matching requests.
+    
+    // Explicit wildcard hostname.
+    ->addMockRequest("https://*/some/path", MockResponse::success())
+    // Implied wildcard hostname.
+    ->addMockRequest("/some/path", MockResponse::success())
+    // wildcard in path
+    ->addMockRequest("https://some-doain.com/some/*", MockResponse::success())
+    // Total wildcard
+    ->addMockRequest("*", MockResponse::notFound())
+;
+
+// Mock multiple requests at once
+$mockHttp->mockMulti([
+    "GET /some/path" => MockResponse::success()
+    "POST /other/path" => MockResponse::json([])
+]);
+```
+
+### Response Sequences 
+
+Anywhere you can use a mocked `HttpResponse` you can also use a `MockHttpSequence`.
+
+Each item pushed into the sequence will return exactly once. Once that response has been returned it will not be returned again.
+
+If the whole sequence is exhausted it will return 404 responses.
+
+```php
+use Garden\Http\Mocks\MockHttpHandler;
+use Garden\Http\Mocks\MockResponse;
+
+$mockHttp = MockHttpHandler::mock();
+
+$mockHttp->mockMulti([
+    "GET /some/path" => MockResponse::sequence()
+        ->push(new \Garden\Http\HttpResponse(500, [], ""))
+        ->push(MockResponse::success())
+        ->push(MockResponse::json([])
+        ->push([]) // Implied json
+    ,
+]);
+```
+
+### Assertions about requests
+
+Some utilities are provided to make assertions against requests that were made. This can be particularly useful with a wildcard response.
+
+```php
+use Garden\Http\Mocks\MockHttpHandler;
+use Garden\Http\Mocks\MockResponse;
+use Garden\Http\HttpRequest;
+
+$mockHttp = MockHttpHandler::mock();
+
+$mockHttp->addMockRequest("*", MockResponse::success());
+
+// Ensure no requests were made.
+$mockHttp->assertNothingSent();
+
+// Check that a request was made
+$foundRequest = $mockHttp->assertSent(fn (HttpRequest $request) => $request->getUri()->getPath() === "/some/path");
+
+// Check that a request was not made.
+$foundRequest = $mockHttp->assertNotSent(fn (HttpRequest $request) => $request->getUri()->getPath() === "/some/path");
+
+// Clear the history (and mocked requests)
+$mockHttp->reset();
+```

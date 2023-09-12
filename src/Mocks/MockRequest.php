@@ -9,7 +9,6 @@ namespace Garden\Http\Mocks;
 
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
-use PhpParser\Node\Expr\Empty_;
 
 /**
  * Request object to hold an expected response for a mock request.
@@ -19,7 +18,7 @@ class MockRequest {
     /** @var HttpRequest */
     private $request;
 
-    /** @var HttpResponse */
+    /** @var HttpResponse|MockResponseSequence */
     private $response;
 
     /** @var int */
@@ -28,14 +27,31 @@ class MockRequest {
     /**
      * DI.
      *
-     * @param HttpRequest $request
-     * @param HttpResponse $response
+     * @param HttpRequest|string $request
+     * @param HttpResponse|string|array|null $response
      */
-    public function __construct(HttpRequest $request, HttpResponse $response) {
+    public function __construct($request, $response = null) {
+        if ($request === "*") {
+            $request = new HttpRequest(HttpRequest::METHOD_GET, "https://*/*");
+        }
+        if (is_string($request)) {
+            $pieces = explode(" ", $request);
+            $method = count($pieces) === 1 ? HttpRequest::METHOD_GET : $pieces[0];
+            $url = count($pieces) === 1 ? $pieces[0] : $pieces[1];
+
+            $request = new HttpRequest($method, $url);
+        }
+
         $ownUrlParts = parse_url($request->getUrl());
         if (empty($ownUrlParts['host'])) {
             // Add a wildcard.
             $request->setUrl("https://*" . $request->getUrl());
+        }
+
+        $response = $response ?? MockResponse::success();
+
+        if (!$response instanceof MockResponseSequence && !$response instanceof HttpResponse) {
+            $response = MockResponse::json($response);
         }
 
         $this->request = $request;
@@ -136,7 +152,12 @@ class MockRequest {
      * @return HttpResponse
      */
     public function getResponse(): HttpResponse {
-        return $this->response;
+        $response = $this->response;
+        if ($response instanceof MockResponseSequence) {
+            return $response->take() ?? MockResponse::notFound();
+        } else {
+            return $this->response;
+        }
     }
 
     /**
