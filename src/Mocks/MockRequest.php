@@ -9,6 +9,7 @@ namespace Garden\Http\Mocks;
 
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
+use PhpParser\Node\Expr\Empty_;
 
 /**
  * Request object to hold an expected response for a mock request.
@@ -31,6 +32,12 @@ class MockRequest {
      * @param HttpResponse $response
      */
     public function __construct(HttpRequest $request, HttpResponse $response) {
+        $ownUrlParts = parse_url($request->getUrl());
+        if (empty($ownUrlParts['host'])) {
+            // Add a wildcard.
+            $request->setUrl("https://*" . $request->getUrl());
+        }
+
         $this->request = $request;
         $this->response = $response;
     }
@@ -43,30 +50,46 @@ class MockRequest {
      * @return bool True if the incoming request matched.
      */
     public function match(HttpRequest $incomingRequest): bool {
+        $score = 0;
         if ($incomingRequest->getMethod() !== $this->request->getMethod()) {
             // Wrong method. No match.
             $this->setScore(0);
+
             return false;
         }
 
         $incomingUrlParts = parse_url($incomingRequest->getUrl());
         $ownUrlParts = parse_url($this->request->getUrl());
-        if (($incomingUrlParts['host'] ?? '') !== ($ownUrlParts['host'] ?? '')) {
+        $compareUrls = function (string $own, string $incoming) use (&$score): bool {
+            if (str_contains($own, "*") && fnmatch($own, $incoming) || $incoming == "" && ($own === "*" || $own === "/*")) {
+                $score += 1;
+
+                return true;
+            } elseif ($own == $incoming) {
+                $score += 2;
+
+                return true;
+            } else {
+                return false;
+            }
+        };
+
+        if (!$compareUrls($ownUrlParts['host'] ?? "", $incomingUrlParts['host'] ?? "")) {
             // Wrong host. No match.
             $this->setScore(0);
+
             return false;
         }
 
-        if (isset($incomingUrlParts['path']) && ($incomingUrlParts['path'] !== $ownUrlParts['path'])) {
+        if (isset($ownUrlParts['path']) && !$compareUrls($ownUrlParts['path'] ?? "", $incomingUrlParts['path'] ?? "")) {
             // Wrong path. No match.
             $this->setScore(0);
+
             return false;
         }
 
         parse_str($incomingUrlParts['query'] ?? '', $incomingQuery);
         parse_str($ownUrlParts['query'] ?? '', $ownQuery);
-
-        $score = 1;
 
         $compareArrays = function (array $own, array $incoming) use (&$score): bool {
             foreach ($own as $ownParam => $ownValue) {
@@ -74,12 +97,14 @@ class MockRequest {
                     // The mock specified a query, and it wasn't present or did not match the incoming one.
                     // Both request specified the parameter, but it didn't match.
                     $this->setScore(0);
+
                     return false;
                 }
 
                 // we had a match, increment score.
                 $score += 1;
             }
+
             return true;
         };
 
@@ -96,6 +121,7 @@ class MockRequest {
         }
 
         $this->setScore($score);
+
         return true;
     }
 

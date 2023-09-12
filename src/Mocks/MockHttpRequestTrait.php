@@ -38,11 +38,18 @@ trait MockHttpRequestTrait {
         });
 
         $bestMock = $matchedMocks[0] ?? null;
+
+
         if ($bestMock == null) {
-            return new HttpResponse(404);
+            $response = new HttpResponse(404);
         } else {
-            return $bestMock->getResponse();
+            $response = $bestMock->getResponse();
         }
+
+        $response->setRequest($request);
+        $request->setResponse($response);
+        $this->history[] = $request;
+        return $response;
     }
 
     /**

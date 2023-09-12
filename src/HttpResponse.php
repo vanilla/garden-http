@@ -8,10 +8,12 @@
 namespace Garden\Http;
 
 
+use Psr\Http\Message\ResponseInterface;
+
 /**
  * Representation of an outgoing, server-side response.
  */
-class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializable {
+class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializable, ResponseInterface {
     /// Properties ///
 
     /**
@@ -477,5 +479,14 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
             "request" => $this->getRequest(),
             "body" => $this->getRawBody(),
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withStatus(int $code, string $reasonPhrase = '') {
+        $cloned = clone $this;
+        $cloned->setStatus($code);
+        return $cloned;
     }
 }

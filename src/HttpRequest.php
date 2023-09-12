@@ -7,11 +7,15 @@
 
 namespace Garden\Http;
 
+use Garden\Http\Mocks\MockHttpHandler;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\UriInterface;
+use Slim\Psr7\Factory\UriFactory;
 
 /**
  * Representation of an outgoing, client-side request.
  */
-class HttpRequest extends HttpMessage implements \JsonSerializable {
+class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInterface {
     /// Constants ///
 
     const METHOD_DELETE = 'DELETE';
@@ -49,6 +53,9 @@ class HttpRequest extends HttpMessage implements \JsonSerializable {
      */
     protected $verifyPeer;
 
+    /** @var HttpResponse|null */
+    protected ?HttpResponse $response;
+
     /// Methods ///
 
     /**
@@ -85,6 +92,21 @@ class HttpRequest extends HttpMessage implements \JsonSerializable {
     }
 
     /**
+     * @return HttpResponse|null
+     */
+    public function getResponse(): ?HttpResponse {
+        return $this->response;
+    }
+
+    /**
+     * @param HttpResponse $response
+     * @return void
+     */
+    public function setResponse(HttpResponse $response): void {
+        $this->response = $response;
+    }
+
+    /**
      * Get the auth.
      *
      * @return array Returns the auth.
@@ -112,6 +134,10 @@ class HttpRequest extends HttpMessage implements \JsonSerializable {
     public function send(HttpHandlerInterface $executor = null): HttpResponse {
         if ($executor === null) {
             $executor = new CurlHandler();
+        }
+
+        if (MockHttpHandler::getMock() !== null) {
+            $executor = MockHttpHandler::getMock();
         }
 
         $response = $executor->send($this);
@@ -228,5 +254,68 @@ class HttpRequest extends HttpMessage implements \JsonSerializable {
             "url" => $this->getUrl(),
             "method" => $this->getMethod(),
         ];
+    }
+
+    ///
+    /// PSR Implementation
+    ///
+
+    /**
+     * @inheritDoc
+     */
+    public function getRequestTarget(): string {
+        $uri = $this->getUri();
+        $path = $uri->getPath();
+        $path = '/' . ltrim($path, '/');
+
+        $query = $uri->getQuery();
+        if ($query) {
+            $path .= '?' . $query;
+        }
+
+        return $path;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withRequestTarget(string $requestTarget) {
+        $uri = $this->getUri();
+        $pieces = parse_url($requestTarget);
+
+        if (isset($pieces['path'])) {
+            $uri = $uri->withPath($pieces['path']);
+        }
+
+        if (isset($pieces['query'])) {
+            $uri = $uri->withQuery($pieces['query']);
+        }
+        return $this->withUri($uri);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withMethod(string $method) {
+        $cloned = clone $this;
+        $cloned->setMethod($method);
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUri(): UriInterface {
+        $uriFactory = new UriFactory();
+        return $uriFactory->createUri($this->getUrl());
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withUri(UriInterface $uri, bool $preserveHost = false) {
+        $cloned = clone $this;
+        $cloned->setUrl((string) $uri);
+        return $cloned;
     }
 }

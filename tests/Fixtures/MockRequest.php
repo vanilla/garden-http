@@ -48,6 +48,7 @@ class MockRequest extends HttpRequest {
 
         $response = new HttpResponse(200, ['Content-Type' => 'application/json'], json_encode($result));
         $response->setRequest($request);
+        $request->setResponse($response);
 
         return $response;
     }

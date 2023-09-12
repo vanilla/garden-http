@@ -10,6 +10,7 @@ namespace Garden\Http\Tests;
 use Garden\Http\HttpRequest;
 use Garden\Http\HttpResponse;
 use PHPUnit\Framework\TestCase;
+use Slim\Psr7\Factory\UriFactory;
 
 /**
  * Contains tests against the {@link HttpMessage}, {@link HttpRequest}, and  {@link HttpResponse}classes.
@@ -171,6 +172,16 @@ HEADERS;
             ->addHeader('fOO', 'baz')
             ->setHeader('foo', 'world');
         $this->assertSame('world', $msg->getHeader('foo'));
+
+        // PSR-7
+        $msg = $msg->withHeader("head1", "val1");
+        $this->assertEquals("val1", $msg->getHeaderLine("head1"));
+        $msg = $msg->withAddedHeader("head1", "val2");
+        $this->assertEquals("val1,val2", $msg->getHeaderLine("head1"));
+        $msg = $msg->withHeader("head1", "val3");
+        $this->assertEquals("val3", $msg->getHeaderLine("head1"));
+        $msg = $msg->withoutHeader("head1");
+        $this->assertEquals("", $msg->getHeaderLine("head1"));
     }
 
     /**
@@ -410,5 +421,28 @@ EOT;
     public function testReasonPhrase(): void {
         $this->assertSame('OK', HttpResponse::reasonPhrase(200));
         $this->assertNull(HttpResponse::reasonPhrase(4234324));
+    }
+
+    /**
+     * Test various PSR-7 compatible methods on the request objects.
+     */
+    public function testPsr7Methods() {
+        $request = new HttpRequest("GET", "https://some-place.com/path?query", "", ["header1" => "vla"]);
+        $request = $request->withProtocolVersion("2.0");
+        $this->assertEquals("2.0", $request->getProtocolVersion());
+
+        $uriFactory = new UriFactory();
+        $newUrl = "https://other-place.com/other-path?query2";
+        $newUri = $uriFactory->createUri($newUrl);
+        $newUriReq = $request->withUri($newUri);
+        $this->assertEquals($newUrl, $newUriReq->getUrl());
+        $this->assertNotEquals($newUrl, $request->getUrl());
+
+        $postReq = $newUriReq->withMethod("POST");
+        $this->assertEquals("POST", $postReq->getMethod());
+        $this->assertEquals("/other-path?query2", $postReq->getRequestTarget());
+
+        $otherTargetReq = $newUriReq->withRequestTarget("/new-path?query3");
+        $this->assertEquals("https://other-place.com/new-path?query3", $otherTargetReq->getUrl());
     }
 }
