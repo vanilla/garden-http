@@ -181,6 +181,7 @@ class CurlHandler implements HttpHandlerInterface {
         $curlResponse = $this->execCurl($ch);
         $response = $this->decodeCurlResponse($ch, $curlResponse);
         $response->setRequest($request);
+        $request->setResponse($response);
 
         if (!$request->hasHeader('connection')
             || strcasecmp($request->getHeader('connection'), 'close') === 0

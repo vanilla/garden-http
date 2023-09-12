@@ -8,12 +8,15 @@
 namespace Garden\Http;
 
 
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
+
 /**
  * HTTP messages consist of requests from a client to a server and responses from a server to a client.
  *
  * This is the base class for both the {@link HttpRequest} class and the {@link HttpResponse} class.
  */
-abstract class HttpMessage {
+abstract class HttpMessage implements MessageInterface {
     /// Properties ///
 
     /**
@@ -166,7 +169,7 @@ abstract class HttpMessage {
                     $result = [];
                     continue;
                 } elseif (strstr($line, ': ')) {
-                    list($key, $line) = explode(': ', $line);
+                    [$key, $line] = explode(': ', $line);
                 } else {
                     continue;
                 }
@@ -254,5 +257,59 @@ abstract class HttpMessage {
     public function setBody($body) {
         $this->body = $body;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withProtocolVersion(string $version): self {
+        $cloned = clone $this;
+        $cloned->protocolVersion = $version;
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHeaderLine(string $name) {
+        $headerLines = $this->getHeaderLines($name);
+        return implode(",", $headerLines);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withHeader(string $name, $value) {
+        $cloned = clone $this;
+        $cloned->setHeader($name, $value);
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withAddedHeader(string $name, $value) {
+        $cloned = clone $this;
+        $cloned->addHeader($name, $value);
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withoutHeader(string $name) {
+        $cloned = clone $this;
+        unset($cloned->headers[$name]);
+        unset($cloned->headerNames[$name]);
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withBody(StreamInterface $body) {
+        $cloned = clone $this;
+        $cloned->setBody($body->getContents());
+        return $cloned;
     }
 }
