@@ -25,6 +25,7 @@ class EchoHandler implements HttpHandlerInterface {
         ]);
 
         $response->setRequest($request);
+        $request->setResponse($response);
 
         return $response;
     }

@@ -12,11 +12,12 @@
 		"php": ">=7.4",
 		"ext-curl": "*",
 		"ext-json": "*",
-		"vanilla/garden-utils": "^1.1"
+		"vanilla/garden-utils": "^1.1",
+		"psr/http-message": "^1.1",
+		"slim/psr7": "^1.6"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^9.0",
-		"slim/psr7": "^1.6",
 		"slim/slim": "^4.11",
 		"slim/http": "^1.3"
 	},
