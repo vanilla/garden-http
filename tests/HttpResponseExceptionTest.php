@@ -22,7 +22,7 @@ class HttpResponseExceptionTest extends TestCase {
         $response = new HttpResponse(501, ["content-type" => "application/json"], '{"message":"Some error occured."}');
         $response->setRequest(new HttpRequest("POST", "/some/path"));
         $this->assertEquals([
-            "message" => 'Request POST /some/path failed with a response code of 501 and a custom message of "Some error occured."',
+            "message" => 'Request "POST /some/path" failed with a response code of 501 and a custom message of "Some error occured."',
             "status" => 501,
             "code" => 501,
             "request" => [

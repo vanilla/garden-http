@@ -13,6 +13,7 @@ use Garden\Http\HttpResponse;
 use Garden\Http\HttpResponseException;
 use Garden\Http\Mocks\MockHttpClient;
 use Garden\Http\Mocks\MockHttpHandler;
+use Garden\Http\Mocks\MockResponse;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -136,15 +137,21 @@ class MockHttpClientTest extends TestCase {
     public function testMockingWildcards() {
         $client = new HttpClient();
         $mock = MockHttpHandler::mock();
-        $mock->addMockRequest(new HttpRequest("GET", "/some-url"), new HttpResponse(200));
-        $mock->addMockRequest(new HttpRequest("GET", "https://some-domain.com/some-url"), new HttpResponse(201));
-        $mock->addMockRequest(new HttpRequest("GET", "https://other-domain.com/some-url"), new HttpResponse(202));
-        $mock->addMockRequest(new HttpRequest("GET", "https://other-domain.com/*"), new HttpResponse(202));
+        $mock->mockMulti([
+            "GET /some-url" => MockResponse::success(),
+            "https://some-domain.com/some-url" => new HttpResponse(201),
+            "https://other-domain.com/*" => MockResponse::sequence()
+                ->push(new MockResponse(202))
+                ->push(new MockResponse(203))
+            ,
+        ]);
 
         $mock->assertNothingSent();
         $this->assertEquals(200, $client->get("/some-url")->getStatusCode());
         $this->assertEquals(201, $client->get("https://some-domain.com/some-url")->getStatusCode());
         $this->assertEquals(202, $client->get("https://other-domain.com/test")->getStatusCode());
+        $this->assertEquals(203, $client->get("https://other-domain.com/test")->getStatusCode());
+        $this->assertEquals(404, $client->get("https://other-domain.com/test")->getStatusCode());
 
         $request = $mock->assertSent(function (HttpRequest $request) {
             return $request->getUri()->getPath() === "/test" && $request->getUri()->getHost() === "other-domain.com";
@@ -152,6 +159,10 @@ class MockHttpClientTest extends TestCase {
         $this->assertEquals("/test", $request->getUri()->getPath());
         $mock->assertSent(function (HttpRequest $request) {
             return $request->getUri()->getPath() === "/some-url" && $request->getUri()->getHost() === "some-domain.com";
+        });
+
+        $mock->assertNotSent(function (HttpRequest $request) {
+            return $request->getMethod() === "POST";
         });
         $mock->reset();
         $mock->assertNothingSent();

@@ -53,13 +53,36 @@ trait MockHttpRequestTrait {
     }
 
     /**
-     * Add a mocked request/response combo.
+     * Mock multiple requests at once.
      *
-     * @param HttpRequest $request
-     * @param HttpResponse $response
+     * @example
+     * $this->multi([
+     *      "/some/url" => ["message" => "this is a response"],
+     *      "GET https://url.here/*" => MockResponse::sequence()
+     *          ->push("response1")
+     *          ->push(new HttpResponse(500, ["headers"], "body"),
+     *      "*" => MockResponse::notFound(),
+     * ]);
+     *
+     * @param array<string, HttpResponse|MockResponseSequence|array> $toMock
+     *
      * @return $this
      */
-    public function addMockRequest(HttpRequest $request, HttpResponse $response) {
+    public function mockMulti(array $toMock): self {
+        foreach ($toMock as $url => $response) {
+            $this->addMockRequest($url, $response);
+        }
+        return $this;
+    }
+
+    /**
+     * Add a mocked request/response combo.
+     *
+     * @param HttpRequest|string $request
+     * @param HttpResponse|MockResponseSequence|array $response
+     * @return $this
+     */
+    public function addMockRequest($request, $response) {
         $this->mockRequests[] = new MockRequest($request, $response);
         return $this;
     }

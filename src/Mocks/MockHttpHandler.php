@@ -32,6 +32,7 @@ class MockHttpHandler implements HttpHandlerInterface {
         $response = $this->dispatchMockRequest($request);
         $response->setRequest($request);
         $request->setResponse($response);
+
         return $response;
     }
 
@@ -73,6 +74,7 @@ class MockHttpHandler implements HttpHandlerInterface {
         $this->history = [];
         $this->mockRequests = [];
         self::$mock = new MockHttpHandler();
+
         return self::$mock;
     }
 
@@ -108,7 +110,28 @@ class MockHttpHandler implements HttpHandlerInterface {
             Assert::fail("Expected to find a matching request. Instead no requests were sent.");
         }
         Assert::assertInstanceOf(HttpRequest::class, $matchingRequest, "Expected to find a matching request. Instead there were " . count($historyIDs) . " requests that did not match.\n" . implode("\n", $historyIDs));
+
         return $matchingRequest;
+    }
+
+    /**
+     * Assert that a request was not sent that matches a callable.
+     *
+     * @param callable(HttpRequest $request): bool $matcher
+     */
+    public function assertNotSent(callable $matcher): void {
+        $matchingRequest = null;
+        foreach ($this->history as $request) {
+            $result = call_user_func($matcher, $request);
+            if ($result) {
+                $matchingRequest = $request;
+                break;
+            }
+        }
+
+        if ($matchingRequest instanceof HttpRequest) {
+            Assert::fail("Expected to find no matching request but instead a matching request \"{$request->getMethod()}{$request->getUrl()}\" was found.");
+        }
     }
 
     /**
@@ -119,6 +142,7 @@ class MockHttpHandler implements HttpHandlerInterface {
         foreach ($this->history as $historyItem) {
             $historyIDs[] = "{$historyItem->getMethod()} {$historyItem->getUrl()}";
         }
+
         return $historyIDs;
     }
 }

@@ -444,7 +444,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
     public function asException(): HttpResponseException {
         $request = $this->getRequest();
         if ($request !== null) {
-            $requestID = "Request {$request->getMethod()} {$request->getUrl()}";
+            $requestID = "Request \"{$request->getMethod()} {$request->getUrl()}\"";
         } else {
             $requestID = "Unknown request";
         }
