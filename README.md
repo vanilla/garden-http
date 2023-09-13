@@ -355,6 +355,24 @@ $mockHttp->mockMulti([
 ]);
 ```
 
+### Response Functions
+
+You can make a mock dynamic by providing a callable.
+
+```php
+use Garden\Http\Mocks\MockHttpHandler;
+use Garden\Http\Mocks\MockResponse;
+use \Garden\Http\HttpRequest;
+use \Garden\Http\HttpResponse;
+
+$mockHttp = MockHttpHandler::mock();
+$mockHttp->addMockRequest("*", function (\Garden\Http\HttpRequest $request): HttpResponse {
+    return MockResponse::json([
+        "requestedUrl" => $request->getUrl(),
+    ]);
+})
+```
+
 ### Assertions about requests
 
 Some utilities are provided to make assertions against requests that were made. This can be particularly useful with a wildcard response.

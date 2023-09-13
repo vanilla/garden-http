@@ -43,7 +43,7 @@ trait MockHttpRequestTrait {
         if ($bestMock == null) {
             $response = new HttpResponse(404);
         } else {
-            $response = $bestMock->getResponse();
+            $response = $bestMock->getResponse($request);
         }
 
         $response->setRequest($request);
@@ -64,7 +64,7 @@ trait MockHttpRequestTrait {
      *      "*" => MockResponse::notFound(),
      * ]);
      *
-     * @param array<string, HttpResponse|MockResponseSequence|array> $toMock
+     * @param array<string, HttpResponse|MockResponseSequence|array|callable(HttpRequest): HttpResponse> $toMock
      *
      * @return $this
      */

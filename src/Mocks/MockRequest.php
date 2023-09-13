@@ -28,7 +28,7 @@ class MockRequest {
      * DI.
      *
      * @param HttpRequest|string $request
-     * @param HttpResponse|string|array|null $response
+     * @param HttpResponse|string|array|null|callable(HttpRequest): HttpResponse $response
      */
     public function __construct($request, $response = null) {
         if ($request === "*") {
@@ -50,7 +50,7 @@ class MockRequest {
 
         $response = $response ?? MockResponse::success();
 
-        if (!$response instanceof MockResponseSequence && !$response instanceof HttpResponse) {
+        if (!is_callable($response) && !$response instanceof MockResponseSequence && !$response instanceof HttpResponse) {
             $response = MockResponse::json($response);
         }
 
@@ -149,11 +149,17 @@ class MockRequest {
     }
 
     /**
+     * Get the expected response from the mock.
+     *
+     * @param HttpRequest $forRequest The request dispatched.
+     *
      * @return HttpResponse
      */
-    public function getResponse(): HttpResponse {
+    public function getResponse(HttpRequest $forRequest): HttpResponse {
         $response = $this->response;
-        if ($response instanceof MockResponseSequence) {
+        if (is_callable($response)) {
+            return call_user_func($response, $forRequest);
+        } elseif ($response instanceof MockResponseSequence) {
             return $response->take() ?? MockResponse::notFound();
         } else {
             return $this->response;

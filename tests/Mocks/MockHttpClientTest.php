@@ -167,4 +167,25 @@ class MockHttpClientTest extends TestCase {
         $mock->reset();
         $mock->assertNothingSent();
     }
+
+    /**
+     * Test using a mocking function.
+     *
+     * @return void
+     */
+    public function testCallableMock(): void {
+        $client = new HttpClient();
+        $mock = MockHttpHandler::mock();
+        $mock->mockMulti([
+            "*" => function (HttpRequest $request): HttpResponse {
+                return MockResponse::json(["url" => $request->getUrl()]);
+            },
+        ]);
+
+        $urls = ["https://some-url.com/test", "http://other-url.com/other-thing"];
+        foreach ($urls as $url) {
+            $response = $client->get($url);
+            $this->assertEquals($url, $response->getBody()['url']);
+        }
+    }
 }
