@@ -29,9 +29,10 @@ class HttpResponseException extends ContextException implements \JsonSerializabl
     public function __construct(HttpResponse $response, $message = "") {
         $responseJson = $response->jsonSerialize();
         unset($responseJson['request']);
+        $request = $response->getRequest();
         $context = [
             "response" => $responseJson,
-            "request" => $response->getRequest()->jsonSerialize(),
+            "request" => $request === null ? null : $request->jsonSerialize()
         ];
         parent::__construct($message, $response->getStatusCode(), $context);
         $this->response = $response;
