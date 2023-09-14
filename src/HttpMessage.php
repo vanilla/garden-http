@@ -72,7 +72,7 @@ abstract class HttpMessage implements MessageInterface {
      * @param string $name Case-insensitive header field name.
      * @return string
      */
-    public function getHeader(string $name): string {
+    public function getHeader($name): string {
         $lines = $this->getHeaderLines($name);
         return implode(',', $lines);
     }
@@ -192,7 +192,7 @@ abstract class HttpMessage implements MessageInterface {
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader(string $header): bool {
+    public function hasHeader($header): bool {
         return !empty($this->headers[strtolower($header)]);
     }
 
@@ -262,7 +262,7 @@ abstract class HttpMessage implements MessageInterface {
     /**
      * @inheritDoc
      */
-    public function withProtocolVersion(string $version): self {
+    public function withProtocolVersion($version): self {
         $cloned = clone $this;
         $cloned->protocolVersion = $version;
         return $cloned;
@@ -271,7 +271,7 @@ abstract class HttpMessage implements MessageInterface {
     /**
      * @inheritDoc
      */
-    public function getHeaderLine(string $name) {
+    public function getHeaderLine($name) {
         $headerLines = $this->getHeaderLines($name);
         return implode(",", $headerLines);
     }
@@ -279,7 +279,7 @@ abstract class HttpMessage implements MessageInterface {
     /**
      * @inheritDoc
      */
-    public function withHeader(string $name, $value) {
+    public function withHeader($name, $value) {
         $cloned = clone $this;
         $cloned->setHeader($name, $value);
         return $cloned;
@@ -288,7 +288,7 @@ abstract class HttpMessage implements MessageInterface {
     /**
      * @inheritDoc
      */
-    public function withAddedHeader(string $name, $value) {
+    public function withAddedHeader($name, $value) {
         $cloned = clone $this;
         $cloned->addHeader($name, $value);
         return $cloned;
@@ -297,7 +297,7 @@ abstract class HttpMessage implements MessageInterface {
     /**
      * @inheritDoc
      */
-    public function withoutHeader(string $name) {
+    public function withoutHeader($name) {
         $cloned = clone $this;
         unset($cloned->headers[$name]);
         unset($cloned->headerNames[$name]);

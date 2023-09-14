@@ -484,7 +484,7 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
     /**
      * @inheritDoc
      */
-    public function withStatus(int $code, string $reasonPhrase = '') {
+    public function withStatus($code, $reasonPhrase = '') {
         $cloned = clone $this;
         $cloned->setStatus($code);
         return $cloned;

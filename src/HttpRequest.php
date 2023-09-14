@@ -279,7 +279,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
     /**
      * @inheritDoc
      */
-    public function withRequestTarget(string $requestTarget) {
+    public function withRequestTarget($requestTarget) {
         $uri = $this->getUri();
         $pieces = parse_url($requestTarget);
 
@@ -296,7 +296,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
     /**
      * @inheritDoc
      */
-    public function withMethod(string $method) {
+    public function withMethod($method) {
         $cloned = clone $this;
         $cloned->setMethod($method);
         return $cloned;
@@ -313,7 +313,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
     /**
      * @inheritDoc
      */
-    public function withUri(UriInterface $uri, bool $preserveHost = false) {
+    public function withUri(UriInterface $uri, $preserveHost = false) {
         $cloned = clone $this;
         $cloned->setUrl((string) $uri);
         return $cloned;
