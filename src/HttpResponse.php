@@ -294,7 +294,14 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @return string Returns the reason phrase.
      */
     public function getReasonPhrase(): string {
-        return $this->reasonPhrase;
+        if ($this->statusCode === 0 && !empty($this->rawBody)) {
+            // CURL often returns a 0 error code if it failed to connect.
+            // This could be for multiple reasons. We need the actual message provided to differentiate between
+            // a timeout vs a DNS resolution failure.
+            return $this->rawBody;
+        } else {
+            return $this->reasonPhrase;
+        }
     }
 
     /**
@@ -478,6 +485,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
             "content-type" => $this->getHeader("content-type") ?: null,
             "request" => $this->getRequest(),
             "body" => $this->getRawBody(),
+            "cf-ray" => $this->getHeader("cf-ray") ?: null,
+            "cf-cache-status" => $this->getHeader("cf-cache-status") ?: null,
         ];
     }
 

@@ -12,6 +12,7 @@ namespace Garden\Http;
  * Represents an client connection to a RESTful API.
  */
 class HttpClient {
+
     /// Properties ///
 
     /**
@@ -325,7 +326,7 @@ class HttpClient {
     /**
      * Set the value of a default option.
      *
-     * @param string $name The name of the default option.
+     * @param string $name The name of the default option. One of the {@link HttpRequest::OPT_*} constants.
      * @param mixed $value The new value of the default option.
      * @return HttpClient Returns `$this` for fluent calls.
      */
@@ -366,7 +367,8 @@ class HttpClient {
     /**
      * Set the default options.
      *
-     * @param array $defaultOptions The new default options array.
+     * @param array<string, mixed> $defaultOptions The new default options array.
+     * Keys are the OPT_* constants from {@link HttpRequest::OPT_*}.
      * @return HttpClient Returns `$this` for fluent calls.
      */
     public function setDefaultOptions(array $defaultOptions) {

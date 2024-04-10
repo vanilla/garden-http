@@ -18,19 +18,16 @@ use PHPUnit\Framework\TestCase;
 class ReadmeTest extends TestCase {
     public function testBasicExample() {
         $api = new HttpClient('http://httpbin.org');
+        $api->setThrowExceptions(true);
         $api->setDefaultHeader('Content-Type', 'application/json');
 
         // Get some data from the API.
         $response = $api->get('/get'); // requests off of base url
-        if ($response->isSuccessful()) {
-            $data = $response->getBody(); // returns array of json decoded data
-        }
+        $data = $response->getBody(); // returns array of json decoded data
 
         $response = $api->post('https://httpbin.org/post', ['foo' => 'bar']);
-        if ($response->isResponseClass('2xx')) {
-            // Access the response like an array.
-            $posted = $response['json']; // should be ['foo' => 'bar']
-        }
+        // Access the response like an array.
+        $posted = $response['json']; // should be ['foo' => 'bar']
 
         if (!$response->isSuccessful()) {
             $this->markTestSkipped();
