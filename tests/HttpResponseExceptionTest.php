@@ -20,7 +20,7 @@ class HttpResponseExceptionTest extends TestCase {
      * Test json serialize implementation of exceptions.
      */
     public function testJsonSerialize(): void {
-        $response = new HttpResponse(501, ["content-type" => "application/json"], '{"message":"Some error occured."}');
+        $response = new HttpResponse(501, ["content-type" => "application/json", "Cf-Ray" => "ray-id-12345"], '{"message":"Some error occured."}');
         $response->setRequest(new HttpRequest("POST", "/some/path"));
         $this->assertEquals([
             "message" => 'Request "POST /some/path" failed with a response code of 501 and a custom message of "Some error occured."',
@@ -34,6 +34,8 @@ class HttpResponseExceptionTest extends TestCase {
                 'statusCode' => 501,
                 'content-type' => 'application/json',
                 'body' => '{"message":"Some error occured."}',
+                "cf-ray" => "ray-id-12345",
+                "cf-cache-status" => null,
             ],
             'class' => 'Garden\Http\HttpResponseException',
         ], $response->asException()->jsonSerialize());
@@ -55,6 +57,8 @@ class HttpResponseExceptionTest extends TestCase {
                 'statusCode' => 500,
                 'content-type' => 'application/json',
                 'body' => '{"error":"hi"}',
+                "cf-ray" => null,
+                "cf-cache-status" => null,
             ],
             'request' => null,
         ], $response->asException()->jsonSerialize());

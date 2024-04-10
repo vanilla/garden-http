@@ -485,6 +485,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
             "content-type" => $this->getHeader("content-type") ?: null,
             "request" => $this->getRequest(),
             "body" => $this->getRawBody(),
+            "cf-ray" => $this->getHeader("cf-ray") ?: null,
+            "cf-cache-status" => $this->getHeader("cf-cache-status") ?: null,
         ];
     }
 
