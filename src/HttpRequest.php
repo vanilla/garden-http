@@ -18,6 +18,12 @@ use Slim\Psr7\Factory\UriFactory;
 class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInterface {
     /// Constants ///
 
+    public const OPT_TIMEOUT = "timeout";
+    public const OPT_CONNECT_TIMEOUT = "connectTimeout";
+    public const OPT_VERIFY_PEER = "verifyPeer";
+    public const OPT_PROTOCOL_VERSION = "protocolVersion";
+    public const OPT_AUTH = "auth";
+
     const METHOD_DELETE = 'DELETE';
     const METHOD_GET = 'GET';
     const METHOD_HEAD = 'HEAD';
@@ -47,6 +53,9 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
      * @var int
      */
     protected $timeout = 0;
+
+    /** @var int */
+    protected $connectTimeout = 0;
 
     /**
      * @var bool
@@ -78,17 +87,11 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
         $this->setBody($body);
         $this->setHeaders($headers);
 
-        $options += [
-            'protocolVersion' => '1.1',
-            'auth' => [],
-            'timeout' => 0,
-            'verifyPeer' => true
-        ];
-
-        $this->setProtocolVersion($options['protocolVersion']);
-        $this->setAuth($options['auth']);
-        $this->setVerifyPeer($options['verifyPeer']);
-        $this->setTimeout($options['timeout']);
+        $this->setProtocolVersion($options[self::OPT_PROTOCOL_VERSION] ?? "1.1");
+        $this->setAuth($options[self::OPT_AUTH] ?? []);
+        $this->setVerifyPeer($options[self::OPT_VERIFY_PEER] ?? true);
+        $this->setConnectTimeout($options[self::OPT_CONNECT_TIMEOUT] ?? 0);
+        $this->setTimeout($options[self::OPT_TIMEOUT] ?? 0);
     }
 
     /**
@@ -225,6 +228,22 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
      */
     public function setTimeout(int $timeout) {
         $this->timeout = $timeout;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getConnectTimeout(): int {
+        return $this->connectTimeout;
+    }
+
+    /**
+     * @param int $connectTimeout
+     * @return void
+     */
+    public function setConnectTimeout(int $connectTimeout): HttpRequest {
+        $this->connectTimeout = $connectTimeout;
         return $this;
     }
 

@@ -83,6 +83,7 @@ class CurlHandler implements HttpHandlerInterface {
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, $request->getTimeout());
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $request->getConnectTimeout());
         curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_HEADER, true);
