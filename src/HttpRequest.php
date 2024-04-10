@@ -271,6 +271,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
     public function jsonSerialize(): array {
         return [
             "url" => $this->getUrl(),
+            "host" => $this->getHeader("host") ?: $this->getUri()->getHost(),
             "method" => $this->getMethod(),
         ];
     }

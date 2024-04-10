@@ -21,13 +21,14 @@ class HttpResponseExceptionTest extends TestCase {
      */
     public function testJsonSerialize(): void {
         $response = new HttpResponse(501, ["content-type" => "application/json", "Cf-Ray" => "ray-id-12345"], '{"message":"Some error occured."}');
-        $response->setRequest(new HttpRequest("POST", "/some/path"));
+        $response->setRequest(new HttpRequest("POST", "https://somesite.com/some/path"));
         $this->assertEquals([
-            "message" => 'Request "POST /some/path" failed with a response code of 501 and a custom message of "Some error occured."',
+            "message" => 'Request "POST https://somesite.com/some/path" failed with a response code of 501 and a custom message of "Some error occured."',
             "status" => 501,
             "code" => 501,
             "request" => [
-                'url' => '/some/path',
+                'url' => 'https://somesite.com/some/path',
+                "host" => "somesite.com",
                 'method' => 'POST',
             ],
             "response" => [
@@ -39,6 +40,19 @@ class HttpResponseExceptionTest extends TestCase {
             ],
             'class' => 'Garden\Http\HttpResponseException',
         ], $response->asException()->jsonSerialize());
+    }
+
+    /**
+     * @return void
+     */
+    public function testHostSiteOverrideSerialize() {
+        $request = new HttpRequest("GET", "https://proxy-server.com/some/path", ["Host" => "example.com"]);
+        $serialized = $request->jsonSerialize();
+        $this->assertEquals([
+            "url" => "https://proxy-server.com/some/path",
+            "host" => "proxy-server.com",
+            "method" => "GET",
+        ], $serialized);
     }
 
     /**
