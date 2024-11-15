@@ -7,13 +7,16 @@
 
 namespace Garden\Http;
 
-
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Representation of an outgoing, server-side response.
  */
-class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializable, ResponseInterface {
+class HttpResponse extends HttpMessage implements
+    \ArrayAccess,
+    \JsonSerializable,
+    ResponseInterface
+{
     /// Properties ///
 
     /**
@@ -39,59 +42,59 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
     /**
      * @var array HTTP response codes and messages.
      */
-    protected static $reasonPhrases = array(
+    protected static $reasonPhrases = [
         // Could not resolve host.
-        0 => 'Could not resolve host',
+        0 => "Could not resolve host",
         // Informational 1xx
-        100 => 'Continue',
-        101 => 'Switching Protocols',
+        100 => "Continue",
+        101 => "Switching Protocols",
         // Successful 2xx
-        200 => 'OK',
-        201 => 'Created',
-        202 => 'Accepted',
-        203 => 'Non-Authoritative Information',
-        204 => 'No Content',
-        205 => 'Reset Content',
-        206 => 'Partial Content',
+        200 => "OK",
+        201 => "Created",
+        202 => "Accepted",
+        203 => "Non-Authoritative Information",
+        204 => "No Content",
+        205 => "Reset Content",
+        206 => "Partial Content",
         // Redirection 3xx
-        300 => 'Multiple Choices',
-        301 => 'Moved Permanently',
-        302 => 'Found',
-        303 => 'See Other',
-        304 => 'Not Modified',
-        305 => 'Use Proxy',
-        306 => '(Unused)',
-        307 => 'Temporary Redirect',
+        300 => "Multiple Choices",
+        301 => "Moved Permanently",
+        302 => "Found",
+        303 => "See Other",
+        304 => "Not Modified",
+        305 => "Use Proxy",
+        306 => "(Unused)",
+        307 => "Temporary Redirect",
         // Client Error 4xx
-        400 => 'Bad Request',
-        401 => 'Unauthorized',
-        402 => 'Payment Required',
-        403 => 'Forbidden',
-        404 => 'Not Found',
-        405 => 'Method Not Allowed',
-        406 => 'Not Acceptable',
-        407 => 'Proxy Authentication Required',
-        408 => 'Request Timeout',
-        409 => 'Conflict',
-        410 => 'Gone',
-        411 => 'Length Required',
-        412 => 'Precondition Failed',
-        413 => 'Request Entity Too Large',
-        414 => 'Request-URI Too Long',
-        415 => 'Unsupported Media Type',
-        416 => 'Requested Range Not Satisfiable',
-        417 => 'Expectation Failed',
+        400 => "Bad Request",
+        401 => "Unauthorized",
+        402 => "Payment Required",
+        403 => "Forbidden",
+        404 => "Not Found",
+        405 => "Method Not Allowed",
+        406 => "Not Acceptable",
+        407 => "Proxy Authentication Required",
+        408 => "Request Timeout",
+        409 => "Conflict",
+        410 => "Gone",
+        411 => "Length Required",
+        412 => "Precondition Failed",
+        413 => "Request Entity Too Large",
+        414 => "Request-URI Too Long",
+        415 => "Unsupported Media Type",
+        416 => "Requested Range Not Satisfiable",
+        417 => "Expectation Failed",
         418 => 'I\'m a teapot',
-        422 => 'Unprocessable Entity',
-        423 => 'Locked',
+        422 => "Unprocessable Entity",
+        423 => "Locked",
         // Server Error 5xx
-        500 => 'Internal Server Error',
-        501 => 'Not Implemented',
-        502 => 'Bad Gateway',
-        503 => 'Service Unavailable',
-        504 => 'Gateway Timeout',
-        505 => 'HTTP Version Not Supported'
-    );
+        500 => "Internal Server Error",
+        501 => "Not Implemented",
+        502 => "Bad Gateway",
+        503 => "Service Unavailable",
+        504 => "Gateway Timeout",
+        505 => "HTTP Version Not Supported",
+    ];
 
     /// Methods ///
 
@@ -102,7 +105,11 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param array|string $headers An array of response headers or a header string.
      * @param string $rawBody The raw body of the response.
      */
-    public function __construct($status = null, $headers = '', string $rawBody = '') {
+    public function __construct(
+        $status = null,
+        $headers = "",
+        string $rawBody = ""
+    ) {
         $this->setHeaders($headers);
         if (isset($status)) {
             $this->setStatus($status);
@@ -117,11 +124,15 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return mixed Returns the http response body, decoded according to its content type.
      */
-    public function getBody() {
+    public function getBody()
+    {
         if (!isset($this->body)) {
-            $contentType = $this->getHeader('Content-Type');
+            $contentType = $this->getHeader("Content-Type");
 
-            if (stripos($contentType, 'application/json') !== false) {
+            if (
+                $this->rawBody &&
+                stripos($contentType, "application/json") !== false
+            ) {
                 $this->body = json_decode($this->rawBody, true);
             } else {
                 $this->body = $this->rawBody;
@@ -138,14 +149,23 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param mixed $body The new body.
      * @return $this
      */
-    public function setBody($body) {
+    public function setBody($body)
+    {
         if (is_string($body) || is_null($body)) {
             $this->rawBody = $this->body = $body;
-        } elseif (is_array($body) || is_bool($body) || is_numeric($body) || $body instanceof \JsonSerializable) {
-            $this->rawBody = json_encode($body, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        } elseif (
+            is_array($body) ||
+            is_bool($body) ||
+            is_numeric($body) ||
+            $body instanceof \JsonSerializable
+        ) {
+            $this->rawBody = json_encode(
+                $body,
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+            );
             $this->body = $body;
         } else {
-            $this->rawBody = '';
+            $this->rawBody = "";
             $this->body = $body;
         }
 
@@ -168,7 +188,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return HttpResponse Returns `$this` for fluent calls.
      */
-    public function setHeaders($headers) {
+    public function setHeaders($headers)
+    {
         parent::setHeaders($headers);
 
         if ($statusLine = $this->parseStatusLine($headers)) {
@@ -189,8 +210,10 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param string $class A string representation of the HTTP status code, with 'x' used as a wildcard.
      * @return boolean Returns `true` if the response code matches the {@link $class}, `false` otherwise.
      */
-    public function isResponseClass(string $class): bool {
-        $pattern = '`^'.str_ireplace('x', '\d', preg_quote($class, '`')).'$`';
+    public function isResponseClass(string $class): bool
+    {
+        $pattern =
+            "`^" . str_ireplace("x", "\d", preg_quote($class, "`")) . '$`';
         $result = preg_match($pattern, $this->statusCode);
 
         return $result === 1;
@@ -201,8 +224,9 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return bool Returns `true` if the response was a successful 2xx code.
      */
-    public function isSuccessful(): bool {
-        return $this->isResponseClass('2xx');
+    public function isSuccessful(): bool
+    {
+        return $this->isResponseClass("2xx");
     }
 
     /**
@@ -210,7 +234,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return string The raw body of the response.
      */
-    public function getRawBody(): string {
+    public function getRawBody(): string
+    {
         return $this->rawBody;
     }
 
@@ -219,7 +244,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @param string $body The new raw body.
      */
-    public function setRawBody(string $body) {
+    public function setRawBody(string $body)
+    {
         $this->rawBody = $body;
         $this->body = null;
         return $this;
@@ -230,7 +256,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return string Returns the raw body of the response.
      */
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return $this->rawBody;
     }
 
@@ -239,7 +266,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return string Returns the status code and reason phrase separated by a space.
      */
-    public function getStatus(): string {
+    public function getStatus(): string
+    {
         return trim("{$this->statusCode} {$this->reasonPhrase}");
     }
 
@@ -251,10 +279,17 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * If no reason is given then one will be determined from the status code.
      * @return $this
      */
-    public function setStatus($code, $reasonPhrase = null) {
-        if (preg_match('`(?:HTTP/([\d.]+)\s+)?(\d{3})\s*(.*)`i', $code, $matches)) {
+    public function setStatus($code, $reasonPhrase = null)
+    {
+        if (
+            preg_match(
+                "`(?:HTTP/([\d.]+)\s+)?(\d{3})\s*(.*)`i",
+                $code,
+                $matches
+            )
+        ) {
             $this->protocolVersion = $matches[1] ?: $this->protocolVersion;
-            $code = (int)$matches[2];
+            $code = (int) $matches[2];
             $reasonPhrase = $reasonPhrase ?: $matches[3];
         }
 
@@ -262,9 +297,9 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
             $reasonPhrase = static::$reasonPhrases[$code];
         }
         if (is_numeric($code)) {
-            $this->setStatusCode((int)$code);
+            $this->setStatusCode((int) $code);
         }
-        $this->setReasonPhrase((string)$reasonPhrase);
+        $this->setReasonPhrase((string) $reasonPhrase);
         return $this;
     }
 
@@ -273,7 +308,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return int Returns the code.
      */
-    public function getStatusCode(): int {
+    public function getStatusCode(): int
+    {
         return $this->statusCode ?? 200;
     }
 
@@ -283,7 +319,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param int $statusCode The new status code of the response.
      * @return HttpResponse Returns `$this` for fluent calls.
      */
-    public function setStatusCode(int $statusCode) {
+    public function setStatusCode(int $statusCode)
+    {
         $this->statusCode = $statusCode;
         return $this;
     }
@@ -293,7 +330,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return string Returns the reason phrase.
      */
-    public function getReasonPhrase(): string {
+    public function getReasonPhrase(): string
+    {
         if ($this->statusCode === 0 && !empty($this->rawBody)) {
             // CURL often returns a 0 error code if it failed to connect.
             // This could be for multiple reasons. We need the actual message provided to differentiate between
@@ -310,7 +348,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param string $reasonPhrase The new reason phrase.
      * @return HttpResponse Returns `$this` for fluent calls.
      */
-    public function setReasonPhrase(string $reasonPhrase) {
+    public function setReasonPhrase(string $reasonPhrase)
+    {
         $this->reasonPhrase = $reasonPhrase;
         return $this;
     }
@@ -321,7 +360,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param int $status The status to test.
      * @return string|null Returns a reason phrase or null for an invalid status.
      */
-    public static function reasonPhrase(int $status): ?string {
+    public static function reasonPhrase(int $status): ?string
+    {
         return self::$reasonPhrases[$status] ?? null;
     }
 
@@ -331,26 +371,33 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param string|array $headers Either a header string or a header array.
      * @return string Returns the status line or an empty string if the first line is not an HTTP status.
      */
-    private function parseStatusLine($headers): string {
+    private function parseStatusLine($headers): string
+    {
         if (empty($headers)) {
-            return '';
+            return "";
         }
 
         if (is_string($headers)) {
-            if (preg_match_all('`(?:^|\n)(HTTP/[^\r]+)\r\n`', $headers, $matches)) {
+            if (
+                preg_match_all(
+                    '`(?:^|\n)(HTTP/[^\r]+)\r\n`',
+                    $headers,
+                    $matches
+                )
+            ) {
                 $firstLine = end($matches[1]);
             } else {
                 $firstLine = trim(strstr($headers, "\r\n", true));
             }
         } else {
-            $firstLine = (string)reset($headers);
+            $firstLine = (string) reset($headers);
         }
 
         // Test the status line.
-        if (strpos($firstLine, 'HTTP/') === 0) {
+        if (strpos($firstLine, "HTTP/") === 0) {
             return $firstLine;
         }
-        return '';
+        return "";
     }
 
     /**
@@ -365,7 +412,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * The return value will be casted to boolean if non-boolean was returned.
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      */
-    public function offsetExists($offset): bool {
+    public function offsetExists($offset): bool
+    {
         $body = $this->getBody();
         return isset($body[$offset]);
     }
@@ -405,7 +453,6 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
         } else {
             $this->body[$offset] = $value;
         }
-
     }
 
     /**
@@ -428,7 +475,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return HttpRequest|null Returns the request.
      */
-    public function getRequest() {
+    public function getRequest()
+    {
         return $this->request;
     }
 
@@ -438,7 +486,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      * @param HttpRequest $request The request that generated this response.
      * @return $this
      */
-    public function setRequest(HttpRequest $request = null) {
+    public function setRequest(HttpRequest $request = null)
+    {
         $this->request = $request;
         return $this;
     }
@@ -448,7 +497,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return HttpResponseException
      */
-    public function asException(): HttpResponseException {
+    public function asException(): HttpResponseException
+    {
         $request = $this->getRequest();
         if ($request !== null) {
             $requestID = "Request \"{$request->getMethod()} {$request->getUrl()}\"";
@@ -463,13 +513,21 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
         }
 
         $body = $this->getBody();
-        if (is_array($body) && isset($body['message']) && is_string($body['message'])) {
-            $responseMessage = "and a custom message of \"{$body['message']}\"";
+        if (
+            is_array($body) &&
+            isset($body["message"]) &&
+            is_string($body["message"])
+        ) {
+            $responseMessage = "and a custom message of \"{$body["message"]}\"";
         } else {
             $responseMessage = "and a standard message of \"{$this->getReasonPhrase()}\"";
         }
 
-        $message = implode(" ", [$requestID, $responseAction, $responseMessage]);
+        $message = implode(" ", [
+            $requestID,
+            $responseAction,
+            $responseMessage,
+        ]);
 
         return new HttpResponseException($this, $message);
     }
@@ -479,7 +537,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
      *
      * @return array
      */
-    public function jsonSerialize(): array {
+    public function jsonSerialize(): array
+    {
         return [
             "statusCode" => $this->getStatusCode(),
             "content-type" => $this->getHeader("content-type") ?: null,
@@ -493,7 +552,8 @@ class HttpResponse extends HttpMessage implements \ArrayAccess, \JsonSerializabl
     /**
      * @inheritDoc
      */
-    public function withStatus($code, $reasonPhrase = '') {
+    public function withStatus($code, $reasonPhrase = "")
+    {
         $cloned = clone $this;
         $cloned->setStatus($code);
         return $cloned;
