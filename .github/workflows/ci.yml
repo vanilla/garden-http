@@ -30,8 +30,6 @@ jobs:
             - name: Composer Install
               run: composer install -o
             - name: Start test server
-              run: php -S 0.0.0.0:8091 ./tests/test-server.php > /dev/null 2>&1 &
-            - name: Setup tmate session
-              uses: mxschmitt/action-tmate@v3
+              run: php -S 0.0.0.0:8091 ./tests/test-server.php > /dev/null 2>&1
             - name: PHPUnit
               run: ./vendor/bin/phpunit -c ./tests/phpunit.xml.dist
