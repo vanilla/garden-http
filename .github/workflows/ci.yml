@@ -30,6 +30,8 @@ jobs:
             - name: Composer Install
               run: composer install -o
             - name: Start test server
-              run: php -S 0.0.0.0:8091 ./tests/test-server.php > /dev/null 2>&1
+              run: php -S 0.0.0.0:8091 ./tests/test-server.php > /dev/null 2>&1 &
+            - name: Waiting for server to start
+              run: sleep 10s
             - name: PHPUnit
               run: ./vendor/bin/phpunit -c ./tests/phpunit.xml.dist
