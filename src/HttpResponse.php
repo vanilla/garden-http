@@ -130,7 +130,7 @@ class HttpResponse extends HttpMessage implements
             $contentType = $this->getHeader("Content-Type");
 
             if (
-                $this->rawBody &&
+                !is_null($this->rawBody) &&
                 stripos($contentType, "application/json") !== false
             ) {
                 $this->body = json_decode($this->rawBody, true);

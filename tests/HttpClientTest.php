@@ -71,7 +71,7 @@ class HttpClientTest extends TestCase
         $r = $api->$methodName("/echo", ["foo" => "bar"]);
         $data = $r->getBody();
 
-        if ($data && is_string($data)) {
+        if (is_string($data)) {
             throw new \Exception("Invalid response: $data.", 500);
         }
 
