@@ -8,7 +8,6 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false"
-         syntaxCheck="false"
          bootstrap="../vendor/autoload.php"
         >
   <php>
@@ -23,10 +22,4 @@
       <directory suffix="Test.php">.</directory>
     </testsuite>
   </testsuites>
-
-  <filter>
-    <whitelist addUncoveredFilesFromWhitelist="false">
-      <directory suffix=".php">../src</directory>
-    </whitelist>
-  </filter>
 </phpunit>
