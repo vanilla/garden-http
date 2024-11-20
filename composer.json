@@ -9,7 +9,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.4",
+		"php": ">=8.0",
 		"ext-curl": "*",
 		"ext-json": "*",
 		"vanilla/garden-utils": "^1.1",
