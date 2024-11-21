@@ -14,15 +14,16 @@ use Garden\Http\HttpResponse;
 /**
  * Mock HTTP client for testing. Does send actual HTTP requests.
  */
-class MockHttpClient extends HttpClient {
-
+class MockHttpClient extends HttpClient
+{
     /** @var MockHttpHandler */
     private $mockHandler;
 
     /**
      * @inheritdoc
      */
-    public function __construct(string $baseUrl = '') {
+    public function __construct(string $baseUrl = "")
+    {
         parent::__construct($baseUrl);
         $this->mockHandler = new MockHttpHandler();
         $this->setHandler($this->mockHandler);
@@ -36,7 +37,8 @@ class MockHttpClient extends HttpClient {
      *
      * @return $this
      */
-    public function addMockRequest(HttpRequest $request, HttpResponse $response) {
+    public function addMockRequest(HttpRequest $request, HttpResponse $response)
+    {
         $this->mockHandler->addMockRequest($request, $response);
         return $this;
     }
@@ -55,7 +57,7 @@ class MockHttpClient extends HttpClient {
         string $uri,
         HttpResponse $response,
         string $method = HttpRequest::METHOD_GET
-    ) {
+    ): static {
         $this->mockHandler->addMockResponse($uri, $response, $method);
         return $this;
     }
