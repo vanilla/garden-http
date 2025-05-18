@@ -11,6 +11,7 @@ namespace Garden\Http;
 /**
  * Represents an client connection to a RESTful API.
  */
+#[\AllowDynamicProperties]
 class HttpClient {
 
     /// Properties ///
