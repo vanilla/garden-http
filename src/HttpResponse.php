@@ -500,8 +500,20 @@ class HttpResponse extends HttpMessage implements
     public function asException(): HttpResponseException
     {
         $request = $this->getRequest();
+
         if ($request !== null) {
-            $requestID = "Request \"{$request->getMethod()} {$request->getUrl()}\"";
+            $proxiedToUri = $request->proxiedToUri;
+            $actualUri = $request->getUri();
+
+            $proxiedToUrl = $proxiedToUri !== null ? (string) $proxiedToUri : null;
+            $proxiedThroughUrl = $proxiedToUrl !== null ? (string) $actualUri : null;
+            $mainUrl = $proxiedToUrl ?? (string) $actualUri;
+
+            if ($proxiedThroughUrl !== null) {
+                $requestID = "Request \"{$request->getMethod()} {$mainUrl} (proxied through {$proxiedThroughUrl})\"";
+            } else {
+                $requestID = "Request \"{$request->getMethod()} {$mainUrl}\"";
+            }
         } else {
             $requestID = "Unknown request";
         }
