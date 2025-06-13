@@ -30,6 +30,7 @@ class HttpResponseExceptionTest extends TestCase {
                 'url' => 'https://somesite.com/some/path',
                 "host" => "somesite.com",
                 'method' => 'POST',
+                'proxiedToUrl' => null,
             ],
             "response" => [
                 'statusCode' => 501,
@@ -52,6 +53,7 @@ class HttpResponseExceptionTest extends TestCase {
             "url" => "https://proxy-server.com/some/path",
             "host" => "proxy-server.com",
             "method" => "GET",
+            'proxiedToUrl' => null,
         ], $serialized);
     }
 

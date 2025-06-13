@@ -41,8 +41,15 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
 
     /**
      * @var string The URL of the request.
+     * @deprecated Use $uri instead.
      */
     protected $url;
+
+    /** @var UriInterface */
+    protected UriInterface $uri;
+
+    /** @var UriInterface|null */
+    protected UriInterface|null $proxiedToUri = null;
 
     /**
      * @var array
@@ -71,7 +78,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
      * Initialize an instance of the {@link HttpRequest} class.
      *
      * @param string $method The HTTP method of the request.
-     * @param string $url The URL where the request will be sent.
+     * @param string|UriInterface $url The URL where the request will be sent.
      * @param string|array $body The body of the request.
      * @param array $headers An array of http headers to be sent with the request.
      * @param array $options An array of extra options.
@@ -81,9 +88,13 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
      * - auth: A username/password used to send basic HTTP authentication with the request.
      * - timeout: The number of seconds to wait before the request times out. A value of zero means no timeout.
      */
-    public function __construct(string $method = self::METHOD_GET, string $url = '', $body = '', array $headers = [], array $options = []) {
+    public function __construct(string $method = self::METHOD_GET, string|UriInterface $url = '', $body = '', array $headers = [], array $options = []) {
         $this->setMethod(strtoupper($method));
-        $this->setUrl($url);
+        if ($url instanceof UriInterface) {
+            $this->setUri($url);
+        } else {
+            $this->setUrl($url);
+        }
         $this->setBody($body);
         $this->setHeaders($headers);
 
@@ -184,7 +195,23 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
      * @return HttpRequest Returns `$this` for fluent calls.
      */
     public function setUrl(string $url) {
+        $uriFactory = new UriFactory();
+        $uri = $uriFactory->createUri($url);
         $this->url = $url;
+        $this->uri = $uri;
+        return $this;
+    }
+
+    /**
+     * Set the URI of the request.
+     *
+     * @param UriInterface $uri The new URI.
+     *
+     * @return static Returns `$this` for fluent calls.
+     */
+    public function setUri(UriInterface $uri): static {
+        $this->uri = $uri;
+        $this->url = (string) $uri;
         return $this;
     }
 
@@ -271,7 +298,8 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
     public function jsonSerialize(): array {
         return [
             "url" => $this->getUrl(),
-            "host" => $this->getHeader("host") ?: $this->getUri()->getHost(),
+            "proxiedToUrl" => $this->proxiedToUri !== null ? (string) $this->proxiedToUri : null,
+            "host" => $this->proxiedToUri !== null ? $this->proxiedToUri->getHost() : $this->getUri()->getHost(),
             "method" => $this->getMethod(),
         ];
     }
@@ -326,8 +354,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
      * @inheritDoc
      */
     public function getUri(): UriInterface {
-        $uriFactory = new UriFactory();
-        return $uriFactory->createUri($this->getUrl());
+        return $this->uri;
     }
 
     /**
@@ -337,5 +364,20 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
         $cloned = clone $this;
         $cloned->setUrl((string) $uri);
         return $cloned;
+    }
+
+    /**
+     * @return UriInterface|null
+     */
+    public function getProxiedToUri(): ?UriInterface {
+        return $this->proxiedToUri;
+    }
+
+    /**
+     * @param UriInterface|null $proxiedToUri
+     * @return void
+     */
+    public function setProxiedToUri(?UriInterface $proxiedToUri): void {
+        $this->proxiedToUri = $proxiedToUri;
     }
 }
