@@ -45,6 +45,6 @@ class ProxyMiddleware implements MiddlewareInterface {
 
         $request->setUrl($requestUri);
         $request->setHeader("Host", $originalUri->getHost());
-        $request->proxiedToUri = $originalUri;
+        $request->setProxiedToUri($originalUri);
     }
 }

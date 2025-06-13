@@ -35,5 +35,4 @@ MESSAGE
             $response->asException()->getMessage()
         );
     }
-    
 }

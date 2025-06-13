@@ -502,7 +502,7 @@ class HttpResponse extends HttpMessage implements
         $request = $this->getRequest();
 
         if ($request !== null) {
-            $proxiedToUri = $request->proxiedToUri;
+            $proxiedToUri = $request->getProxiedToUri();
             $actualUri = $request->getUri();
 
             $proxiedToUrl = $proxiedToUri !== null ? (string) $proxiedToUri : null;

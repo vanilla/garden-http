@@ -49,7 +49,7 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
     protected UriInterface $uri;
 
     /** @var UriInterface|null */
-    public UriInterface|null $proxiedToUri = null;
+    protected UriInterface|null $proxiedToUri = null;
 
     /**
      * @var array
@@ -364,5 +364,20 @@ class HttpRequest extends HttpMessage implements \JsonSerializable, RequestInter
         $cloned = clone $this;
         $cloned->setUrl((string) $uri);
         return $cloned;
+    }
+
+    /**
+     * @return UriInterface|null
+     */
+    public function getProxiedToUri(): ?UriInterface {
+        return $this->proxiedToUri;
+    }
+
+    /**
+     * @param UriInterface|null $proxiedToUri
+     * @return void
+     */
+    public function setProxiedToUri(?UriInterface $proxiedToUri): void {
+        $this->proxiedToUri = $proxiedToUri;
     }
 }
